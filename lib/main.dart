@@ -151,7 +151,6 @@ class HiveStore {
   static const _kExpenses = 'expenses';
   static const _kCategories = 'categories';
   static const _kPayments = 'payments';
-  static const _kTheme = 'themeMode';
 
   Future<void> init() async {
     await Hive.initFlutter();
@@ -206,10 +205,6 @@ class HiveStore {
   set rawCategories(List<String> v) =>
       _box.put(_kCategories, jsonEncode(v));
 
-  // ── Theme ─────────────────────────────────────────────────────────────────
-  String get rawTheme => _box.get(_kTheme, defaultValue: 'system') as String;
-  set rawTheme(String v) => _box.put(_kTheme, v);
-
   // ── Full export / import ─────────────────────────────────────────────────
   Map<String, dynamic> exportAll() => {
         'members': rawMembers.map((e) => e.toJson()).toList(),
@@ -251,7 +246,6 @@ class MessController extends GetxController {
 
   // ── Reactive UI state ────────────────────────────────────────────────────
   final selectedMonth = ''.obs; // yyyy-MM
-  final themeMode = ThemeMode.system.obs;
   final currentTabIndex = 0.obs;
 
   // ── Lifecycle ─────────────────────────────────────────────────────────────
@@ -269,18 +263,6 @@ class MessController extends GetxController {
     categories.value = _store.rawCategories;
     selectedMonth.value =
         DateFormat('yyyy-MM').format(DateTime.now());
-    themeMode.value = _parseTheme(_store.rawTheme);
-  }
-
-  ThemeMode _parseTheme(String s) {
-    switch (s) {
-      case 'light':
-        return ThemeMode.light;
-      case 'dark':
-        return ThemeMode.dark;
-      default:
-        return ThemeMode.system;
-    }
   }
 
   // ════════════════════════════════════════════════════════════════════════
@@ -505,28 +487,6 @@ class MessController extends GetxController {
   }
 
   // ════════════════════════════════════════════════════════════════════════
-  // THEME
-  // ════════════════════════════════════════════════════════════════════════
-
-  void setTheme(ThemeMode mode) {
-    themeMode.value = mode;
-    String key;
-    switch (mode) {
-      case ThemeMode.light:
-        key = 'light';
-        break;
-      case ThemeMode.dark:
-        key = 'dark';
-        break;
-      default:
-        key = 'system';
-    }
-    _store.rawTheme = key;
-    // Apply to running app
-    Get.changeThemeMode(mode);
-  }
-
-  // ════════════════════════════════════════════════════════════════════════
   // BACKUP / RESTORE
   // ════════════════════════════════════════════════════════════════════════
 
@@ -551,6 +511,17 @@ class MessController extends GetxController {
     _store.importAll(data);
     _load(); // refresh reactive state
     return true;
+  }
+
+  void wipeAllData() {
+    members.clear();
+    mealEntries.clear();
+    expenses.clear();
+    payments.clear();
+    _store.rawMembers = [];
+    _store.rawMeals = [];
+    _store.rawExpenses = [];
+    _store.rawPayments = [];
   }
 
   // ════════════════════════════════════════════════════════════════════════
@@ -677,6 +648,7 @@ class MessApp extends StatelessWidget {
   const MessApp({super.key});
 
   ThemeData _buildLight() => ThemeData(
+        brightness: Brightness.light,
         useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(
           seedColor: _kGreen,
@@ -718,6 +690,7 @@ class MessApp extends StatelessWidget {
       );
 
   ThemeData _buildDark() => ThemeData(
+        brightness: Brightness.dark,
         useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(
           seedColor: _kGreen,
@@ -765,7 +738,7 @@ class MessApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: _buildLight(),
       darkTheme: _buildDark(),
-      themeMode: Get.find<MessController>().themeMode.value,
+      themeMode: ThemeMode.system,
       home: const HomeScreen(),
     );
   }
@@ -2415,7 +2388,7 @@ class _SettingsScreenState extends State<SettingsScreen>
   @override
   void initState() {
     super.initState();
-    _tab = TabController(length: 4, vsync: this);
+    _tab = TabController(length: 3, vsync: this);
   }
 
   @override
@@ -2438,7 +2411,6 @@ class _SettingsScreenState extends State<SettingsScreen>
           tabs: const [
             Tab(text: 'Members'),
             Tab(text: 'Categories'),
-            Tab(text: 'Theme'),
             Tab(text: 'Backup'),
           ],
         ),
@@ -2448,7 +2420,6 @@ class _SettingsScreenState extends State<SettingsScreen>
         children: const [
           _MembersTab(),
           _CategoriesTab(),
-          _ThemeTab(),
           _BackupTab(),
         ],
       ),
@@ -2553,8 +2524,8 @@ class _MembersTab extends StatelessWidget {
           ElevatedButton(
             onPressed: () {
               if (c.text.trim().isNotEmpty) {
-                ctrl.addMember(c.text.trim());
                 Navigator.pop(context);
+                ctrl.addMember(c.text.trim());
               }
             },
             child: const Text('Add'),
@@ -2585,8 +2556,8 @@ class _MembersTab extends StatelessWidget {
           ElevatedButton(
             onPressed: () {
               if (c.text.trim().isNotEmpty) {
-                ctrl.updateMember(m.id, c.text.trim());
                 Navigator.pop(context);
+                ctrl.updateMember(m.id, c.text.trim());
               }
             },
             child: const Text('Save'),
@@ -2614,8 +2585,8 @@ class _MembersTab extends StatelessWidget {
                 backgroundColor: Colors.red,
                 foregroundColor: Colors.white),
             onPressed: () {
-              ctrl.deleteMember(m.id);
               Navigator.pop(context);
+              ctrl.deleteMember(m.id);
             },
             child: const Text('Delete'),
           ),
@@ -2697,8 +2668,8 @@ class _CategoriesTab extends StatelessWidget {
           ElevatedButton(
             onPressed: () {
               if (c.text.trim().isNotEmpty) {
-                ctrl.addCategory(c.text.trim());
                 Navigator.pop(context);
+                ctrl.addCategory(c.text.trim());
               }
             },
             child: const Text('Add'),
@@ -2707,70 +2678,6 @@ class _CategoriesTab extends StatelessWidget {
       ),
     );
     c.dispose();
-  }
-}
-
-// ── Theme Tab ─────────────────────────────────────────────────────────────────
-
-class _ThemeTab extends StatelessWidget {
-  const _ThemeTab();
-
-  @override
-  Widget build(BuildContext context) {
-    final ctrl = Get.find<MessController>();
-
-    const options = [
-      (ThemeMode.system, Icons.brightness_auto, 'System Default',
-          'Follow device setting'),
-      (ThemeMode.light, Icons.light_mode, 'Light Mode',
-          'Always use light theme'),
-      (ThemeMode.dark, Icons.dark_mode, 'Dark Mode',
-          'Always use dark theme'),
-    ];
-
-    return Obx(() => ListView(
-          padding: const EdgeInsets.all(16),
-          children: [
-            const Text('Appearance',
-                style:
-                    TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 6),
-            Text(
-              'Choose how Mess Manager looks. System Default follows your device\'s setting.',
-              style: TextStyle(color: Colors.grey[600], fontSize: 13),
-            ),
-            const SizedBox(height: 20),
-            ...options.map((opt) {
-              final (mode, icon, title, subtitle) = opt;
-              final selected = ctrl.themeMode.value == mode;
-              return Card(
-                margin: const EdgeInsets.only(bottom: 10),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  side: selected
-                      ? const BorderSide(color: _kGreen, width: 2)
-                      : BorderSide.none,
-                ),
-                child: ListTile(
-                  leading: Icon(icon,
-                      color: selected ? _kGreen : Colors.grey),
-                  title: Text(title,
-                      style: TextStyle(
-                          fontWeight: selected
-                              ? FontWeight.bold
-                              : FontWeight.normal)),
-                  subtitle: Text(subtitle,
-                      style: const TextStyle(fontSize: 12)),
-                  trailing: selected
-                      ? const Icon(Icons.check_circle,
-                          color: _kGreen)
-                      : null,
-                  onTap: () => ctrl.setTheme(mode),
-                ),
-              );
-            }),
-          ],
-        ));
   }
 }
 
@@ -2843,6 +2750,60 @@ class _BackupTab extends StatelessWidget {
             'App Version: 2.0.0\nData stored locally on device.\nNo internet required.',
             style: TextStyle(color: Colors.grey[400], fontSize: 12),
             textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 32),
+          const Divider(),
+          const SizedBox(height: 16),
+          const Text('Danger Zone',
+              style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.red)),
+          const SizedBox(height: 12),
+          ElevatedButton.icon(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red,
+              foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(vertical: 14),
+            ),
+            icon: const Icon(Icons.delete_forever),
+            label: const Text('Wipe All Data',
+                style: TextStyle(fontSize: 15)),
+            onPressed: () => _showWipeConfirm(context, ctrl),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showWipeConfirm(BuildContext context, MessController ctrl) {
+    showDialog<void>(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Text('Wipe All Data?'),
+        content: const Text(
+          'This will permanently delete all members, meals, expenses, and payments. This action cannot be undone.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red,
+              foregroundColor: Colors.white,
+            ),
+            onPressed: () {
+              Navigator.pop(context);
+              ctrl.wipeAllData();
+              Get.snackbar(
+                'Success',
+                'All data has been wiped.',
+                snackPosition: SnackPosition.BOTTOM,
+              );
+            },
+            child: const Text('Wipe'),
           ),
         ],
       ),
