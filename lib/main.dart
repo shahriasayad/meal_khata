@@ -1,18 +1,13 @@
 // ignore_for_file: deprecated_member_use
 
 import 'dart:convert';
-import 'dart:io';
-
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:intl/intl.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
-import 'package:share_plus/share_plus.dart';
 
 // ════════════════════════════════════════════════════════════════════════════
 // MODELS
@@ -44,16 +39,16 @@ class MealEntry {
   });
 
   Map<String, dynamic> toJson() => {
-        'memberId': memberId,
-        'date': date,
-        'meals': meals,
-      };
+    'memberId': memberId,
+    'date': date,
+    'meals': meals,
+  };
 
   factory MealEntry.fromJson(Map<String, dynamic> j) => MealEntry(
-        memberId: j['memberId'] as String,
-        date: j['date'] as String,
-        meals: (j['meals'] as num).toDouble(),
-      );
+    memberId: j['memberId'] as String,
+    date: j['date'] as String,
+    meals: (j['meals'] as num).toDouble(),
+  );
 }
 
 class Expense {
@@ -76,30 +71,29 @@ class Expense {
     double? amount,
     String? category,
     String? note,
-  }) =>
-      Expense(
-        id: id,
-        date: date ?? this.date,
-        amount: amount ?? this.amount,
-        category: category ?? this.category,
-        note: note ?? this.note,
-      );
+  }) => Expense(
+    id: id,
+    date: date ?? this.date,
+    amount: amount ?? this.amount,
+    category: category ?? this.category,
+    note: note ?? this.note,
+  );
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'date': date,
-        'amount': amount,
-        'category': category,
-        'note': note,
-      };
+    'id': id,
+    'date': date,
+    'amount': amount,
+    'category': category,
+    'note': note,
+  };
 
   factory Expense.fromJson(Map<String, dynamic> j) => Expense(
-        id: j['id'] as String,
-        date: j['date'] as String,
-        amount: (j['amount'] as num).toDouble(),
-        category: j['category'] as String,
-        note: (j['note'] as String?) ?? '',
-      );
+    id: j['id'] as String,
+    date: j['date'] as String,
+    amount: (j['amount'] as num).toDouble(),
+    category: j['category'] as String,
+    note: (j['note'] as String?) ?? '',
+  );
 }
 
 /// Records how much a member has paid toward the mess fund for a given month.
@@ -119,20 +113,20 @@ class Payment {
   });
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'memberId': memberId,
-        'month': month,
-        'amount': amount,
-        'note': note,
-      };
+    'id': id,
+    'memberId': memberId,
+    'month': month,
+    'amount': amount,
+    'note': note,
+  };
 
   factory Payment.fromJson(Map<String, dynamic> j) => Payment(
-        id: j['id'] as String,
-        memberId: j['memberId'] as String,
-        month: j['month'] as String,
-        amount: (j['amount'] as num).toDouble(),
-        note: (j['note'] as String?) ?? '',
-      );
+    id: j['id'] as String,
+    memberId: j['memberId'] as String,
+    month: j['month'] as String,
+    amount: (j['amount'] as num).toDouble(),
+    note: (j['note'] as String?) ?? '',
+  );
 }
 
 // ════════════════════════════════════════════════════════════════════════════
@@ -163,7 +157,9 @@ class HiveStore {
   // ── Members ──────────────────────────────────────────────────────────────
   List<Member> get rawMembers {
     final s = _box.get(_kMembers, defaultValue: '[]') as String;
-    return (jsonDecode(s) as List).map((e) => Member.fromJson(e as Map<String, dynamic>)).toList();
+    return (jsonDecode(s) as List)
+        .map((e) => Member.fromJson(e as Map<String, dynamic>))
+        .toList();
   }
 
   set rawMembers(List<Member> v) =>
@@ -172,7 +168,9 @@ class HiveStore {
   // ── Meal Entries ─────────────────────────────────────────────────────────
   List<MealEntry> get rawMeals {
     final s = _box.get(_kMeals, defaultValue: '[]') as String;
-    return (jsonDecode(s) as List).map((e) => MealEntry.fromJson(e as Map<String, dynamic>)).toList();
+    return (jsonDecode(s) as List)
+        .map((e) => MealEntry.fromJson(e as Map<String, dynamic>))
+        .toList();
   }
 
   set rawMeals(List<MealEntry> v) =>
@@ -181,7 +179,9 @@ class HiveStore {
   // ── Expenses ─────────────────────────────────────────────────────────────
   List<Expense> get rawExpenses {
     final s = _box.get(_kExpenses, defaultValue: '[]') as String;
-    return (jsonDecode(s) as List).map((e) => Expense.fromJson(e as Map<String, dynamic>)).toList();
+    return (jsonDecode(s) as List)
+        .map((e) => Expense.fromJson(e as Map<String, dynamic>))
+        .toList();
   }
 
   set rawExpenses(List<Expense> v) =>
@@ -190,7 +190,9 @@ class HiveStore {
   // ── Payments ─────────────────────────────────────────────────────────────
   List<Payment> get rawPayments {
     final s = _box.get(_kPayments, defaultValue: '[]') as String;
-    return (jsonDecode(s) as List).map((e) => Payment.fromJson(e as Map<String, dynamic>)).toList();
+    return (jsonDecode(s) as List)
+        .map((e) => Payment.fromJson(e as Map<String, dynamic>))
+        .toList();
   }
 
   set rawPayments(List<Payment> v) =>
@@ -202,21 +204,21 @@ class HiveStore {
     return List<String>.from(jsonDecode(s) as List);
   }
 
-  set rawCategories(List<String> v) =>
-      _box.put(_kCategories, jsonEncode(v));
+  set rawCategories(List<String> v) => _box.put(_kCategories, jsonEncode(v));
 
   // ── Full export / import ─────────────────────────────────────────────────
   Map<String, dynamic> exportAll() => {
-        'members': rawMembers.map((e) => e.toJson()).toList(),
-        'mealEntries': rawMeals.map((e) => e.toJson()).toList(),
-        'expenses': rawExpenses.map((e) => e.toJson()).toList(),
-        'payments': rawPayments.map((e) => e.toJson()).toList(),
-        'categories': rawCategories,
-      };
+    'members': rawMembers.map((e) => e.toJson()).toList(),
+    'mealEntries': rawMeals.map((e) => e.toJson()).toList(),
+    'expenses': rawExpenses.map((e) => e.toJson()).toList(),
+    'payments': rawPayments.map((e) => e.toJson()).toList(),
+    'categories': rawCategories,
+  };
 
   void importAll(Map<String, dynamic> data) {
-    rawMembers =
-        (data['members'] as List).map((e) => Member.fromJson(e as Map<String, dynamic>)).toList();
+    rawMembers = (data['members'] as List)
+        .map((e) => Member.fromJson(e as Map<String, dynamic>))
+        .toList();
     rawMeals = (data['mealEntries'] as List)
         .map((e) => MealEntry.fromJson(e as Map<String, dynamic>))
         .toList();
@@ -261,8 +263,7 @@ class MessController extends GetxController {
     expenses.value = _store.rawExpenses;
     payments.value = _store.rawPayments;
     categories.value = _store.rawCategories;
-    selectedMonth.value =
-        DateFormat('yyyy-MM').format(DateTime.now());
+    selectedMonth.value = DateFormat('yyyy-MM').format(DateTime.now());
   }
 
   // ════════════════════════════════════════════════════════════════════════
@@ -282,8 +283,7 @@ class MessController extends GetxController {
       payments.where((p) => p.month == selectedMonth.value).toList();
 
   /// Grand total of all meals in the month.
-  double get totalMeals =>
-      monthMeals.fold(0.0, (sum, e) => sum + e.meals);
+  double get totalMeals => monthMeals.fold(0.0, (sum, e) => sum + e.meals);
 
   /// Grand total of all expenses in the month.
   double get totalExpenses =>
@@ -294,19 +294,17 @@ class MessController extends GetxController {
   double get mealRate => totalMeals > 0 ? totalExpenses / totalMeals : 0.0;
 
   /// Total meals consumed by a specific member this month.
-  double memberMeals(String memberId) =>
-      monthMeals
-          .where((e) => e.memberId == memberId)
-          .fold(0.0, (sum, e) => sum + e.meals);
+  double memberMeals(String memberId) => monthMeals
+      .where((e) => e.memberId == memberId)
+      .fold(0.0, (sum, e) => sum + e.meals);
 
   /// Gross cost a member owes based on meals × mealRate.
   double memberGrossCost(String memberId) => memberMeals(memberId) * mealRate;
 
   /// Total amount a member has already paid this month.
-  double memberPaid(String memberId) =>
-      monthPayments
-          .where((p) => p.memberId == memberId)
-          .fold(0.0, (sum, p) => sum + p.amount);
+  double memberPaid(String memberId) => monthPayments
+      .where((p) => p.memberId == memberId)
+      .fold(0.0, (sum, p) => sum + p.amount);
 
   /// Net amount a member still owes (gross cost − paid).
   /// Positive → member owes this much more.
@@ -315,8 +313,7 @@ class MessController extends GetxController {
       memberGrossCost(memberId) - memberPaid(memberId);
 
   /// Total amount paid by all members this month.
-  double get totalPaid =>
-      monthPayments.fold(0.0, (sum, p) => sum + p.amount);
+  double get totalPaid => monthPayments.fold(0.0, (sum, p) => sum + p.amount);
 
   // ════════════════════════════════════════════════════════════════════════
   // MEMBERS
@@ -367,11 +364,9 @@ class MessController extends GetxController {
     // Add new entries (skip zero values).
     for (final entry in mealsMap.entries) {
       if (entry.value > 0) {
-        mealEntries.add(MealEntry(
-          memberId: entry.key,
-          date: date,
-          meals: entry.value,
-        ));
+        mealEntries.add(
+          MealEntry(memberId: entry.key, date: date, meals: entry.value),
+        );
       }
     }
     _store.rawMeals = mealEntries.toList();
@@ -446,8 +441,10 @@ class MessController extends GetxController {
   }
 
   void deleteCategory(int index) {
-    categories.removeAt(index);
-    _store.rawCategories = categories.toList();
+    if (index >= 0 && index < categories.length) {
+      categories.removeAt(index);
+      _store.rawCategories = categories.toList();
+    }
   }
 
   // ════════════════════════════════════════════════════════════════════════
@@ -459,59 +456,54 @@ class MessController extends GetxController {
   }
 
   void prevMonth() {
-    final parts = selectedMonth.value.split('-');
-    var y = int.parse(parts[0]);
-    var m = int.parse(parts[1]) - 1;
-    if (m == 0) {
-      m = 12;
-      y--;
+    try {
+      final parts = selectedMonth.value.split('-');
+      if (parts.length < 2) return;
+      var y = int.tryParse(parts[0]) ?? DateTime.now().year;
+      var m = (int.tryParse(parts[1]) ?? 1) - 1;
+      if (m == 0) {
+        m = 12;
+        y--;
+      }
+      selectedMonth.value = '$y-${m.toString().padLeft(2, '0')}';
+    } catch (_) {
+      selectedMonth.value = DateFormat('yyyy-MM').format(DateTime.now());
     }
-    selectedMonth.value = '$y-${m.toString().padLeft(2, '0')}';
   }
 
   void nextMonth() {
-    final parts = selectedMonth.value.split('-');
-    var y = int.parse(parts[0]);
-    var m = int.parse(parts[1]) + 1;
-    if (m == 13) {
-      m = 1;
-      y++;
+    try {
+      final parts = selectedMonth.value.split('-');
+      if (parts.length < 2) return;
+      var y = int.tryParse(parts[0]) ?? DateTime.now().year;
+      var m = (int.tryParse(parts[1]) ?? 1) + 1;
+      if (m == 13) {
+        m = 1;
+        y++;
+      }
+      selectedMonth.value = '$y-${m.toString().padLeft(2, '0')}';
+    } catch (_) {
+      selectedMonth.value = DateFormat('yyyy-MM').format(DateTime.now());
     }
-    selectedMonth.value = '$y-${m.toString().padLeft(2, '0')}';
   }
 
   String get monthLabel {
-    final parts = selectedMonth.value.split('-');
-    final dt = DateTime(int.parse(parts[0]), int.parse(parts[1]));
-    return DateFormat('MMMM yyyy').format(dt);
+    try {
+      final parts = selectedMonth.value.split('-');
+      if (parts.length < 2) return 'Invalid Month';
+      final y = int.tryParse(parts[0]);
+      final m = int.tryParse(parts[1]);
+      if (y == null || m == null || m < 1 || m > 12) return 'Invalid Month';
+      final dt = DateTime(y, m);
+      return DateFormat('MMMM yyyy').format(dt);
+    } catch (_) {
+      return 'Invalid Month';
+    }
   }
 
   // ════════════════════════════════════════════════════════════════════════
   // BACKUP / RESTORE
   // ════════════════════════════════════════════════════════════════════════
-
-  Future<void> exportJson() async {
-    final data = jsonEncode(_store.exportAll());
-    final dir = await getApplicationDocumentsDirectory();
-    final file = File(
-      '${dir.path}/mess_backup_${DateFormat('yyyyMMdd_HHmm').format(DateTime.now())}.json',
-    );
-    await file.writeAsString(data);
-    await Share.shareXFiles([XFile(file.path)], text: 'Mess Manager Backup');
-  }
-
-  Future<bool> importJson() async {
-    final result = await FilePicker.pickFiles(
-      type: FileType.custom,
-      allowedExtensions: ['json'],
-    );
-    if (result == null || result.files.single.path == null) return false;
-    final content = await File(result.files.single.path!).readAsString();
-    final data = jsonDecode(content) as Map<String, dynamic>;
-    _store.importAll(data);
-    _load(); // refresh reactive state
-    return true;
-  }
 
   void wipeAllData() {
     members.clear();
@@ -545,21 +537,24 @@ class MessController extends GetxController {
         header: (_) => pw.Column(
           crossAxisAlignment: pw.CrossAxisAlignment.start,
           children: [
-            pw.Text('Mess Manager Report',
-                style: pw.TextStyle(
-                    fontSize: 20, fontWeight: pw.FontWeight.bold)),
-            pw.Text('Month: $monthLabel',
-                style: const pw.TextStyle(
-                    fontSize: 12, color: PdfColors.grey700)),
+            pw.Text(
+              'Mess Manager Report',
+              style: pw.TextStyle(fontSize: 20, fontWeight: pw.FontWeight.bold),
+            ),
+            pw.Text(
+              'Month: $monthLabel',
+              style: const pw.TextStyle(fontSize: 12, color: PdfColors.grey700),
+            ),
             pw.SizedBox(height: 6),
             pw.Divider(),
           ],
         ),
         build: (_) => [
           // ── Summary ────────────────────────────────────────────────────
-          pw.Text('Summary',
-              style: pw.TextStyle(
-                  fontSize: 14, fontWeight: pw.FontWeight.bold)),
+          pw.Text(
+            'Summary',
+            style: pw.TextStyle(fontSize: 14, fontWeight: pw.FontWeight.bold),
+          ),
           pw.SizedBox(height: 4),
           pw.Table.fromTextArray(
             headers: ['Metric', 'Value'],
@@ -572,18 +567,13 @@ class MessController extends GetxController {
           pw.SizedBox(height: 14),
 
           // ── Members ────────────────────────────────────────────────────
-          pw.Text('Member Summary',
-              style: pw.TextStyle(
-                  fontSize: 14, fontWeight: pw.FontWeight.bold)),
+          pw.Text(
+            'Member Summary',
+            style: pw.TextStyle(fontSize: 14, fontWeight: pw.FontWeight.bold),
+          ),
           pw.SizedBox(height: 4),
           pw.Table.fromTextArray(
-            headers: [
-              'Member',
-              'Meals',
-              'Gross Cost',
-              'Paid',
-              'Balance',
-            ],
+            headers: ['Member', 'Meals', 'Gross Cost', 'Paid', 'Balance'],
             data: memList.map((m) {
               final meals = mMeals
                   .where((e) => e.memberId == m.id)
@@ -605,19 +595,22 @@ class MessController extends GetxController {
           pw.SizedBox(height: 14),
 
           // ── Expenses ───────────────────────────────────────────────────
-          pw.Text('Expense Details',
-              style: pw.TextStyle(
-                  fontSize: 14, fontWeight: pw.FontWeight.bold)),
+          pw.Text(
+            'Expense Details',
+            style: pw.TextStyle(fontSize: 14, fontWeight: pw.FontWeight.bold),
+          ),
           pw.SizedBox(height: 4),
           pw.Table.fromTextArray(
             headers: ['Date', 'Category', 'Amount', 'Note'],
             data: mExpenses
-                .map((e) => [
-                      e.date,
-                      e.category,
-                      e.amount.toStringAsFixed(2),
-                      e.note,
-                    ])
+                .map(
+                  (e) => [
+                    e.date,
+                    e.category,
+                    e.amount.toStringAsFixed(2),
+                    e.note,
+                  ],
+                )
                 .toList(),
           ),
         ],
@@ -648,85 +641,77 @@ class MessApp extends StatelessWidget {
   const MessApp({super.key});
 
   ThemeData _buildLight() => ThemeData(
-        brightness: Brightness.light,
-        useMaterial3: true,
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: _kGreen,
-          brightness: Brightness.light,
-        ),
-        appBarTheme: const AppBarTheme(
-          backgroundColor: _kGreen,
-          foregroundColor: Colors.white,
-          elevation: 0,
-          centerTitle: false,
-        ),
-        cardTheme: CardThemeData(
-          elevation: 1,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-          surfaceTintColor: Colors.transparent,
-        ),
-        inputDecorationTheme: InputDecorationTheme(
-          border:
-              OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-          contentPadding:
-              const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-        ),
-        elevatedButtonTheme: ElevatedButtonThemeData(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: _kGreen,
-            foregroundColor: Colors.white,
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-          ),
-        ),
-        floatingActionButtonTheme: const FloatingActionButtonThemeData(
-          backgroundColor: _kGreen,
-          foregroundColor: Colors.white,
-        ),
-        navigationBarTheme: NavigationBarThemeData(
-          indicatorColor: _kGreen.withOpacity(0.15),
-        ),
-      );
+    brightness: Brightness.light,
+    useMaterial3: true,
+    colorScheme: ColorScheme.fromSeed(
+      seedColor: _kGreen,
+      brightness: Brightness.light,
+    ),
+    appBarTheme: const AppBarTheme(
+      backgroundColor: _kGreen,
+      foregroundColor: Colors.white,
+      elevation: 0,
+      centerTitle: false,
+    ),
+    cardTheme: CardThemeData(
+      elevation: 1,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      surfaceTintColor: Colors.transparent,
+    ),
+    inputDecorationTheme: InputDecorationTheme(
+      border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+    ),
+    elevatedButtonTheme: ElevatedButtonThemeData(
+      style: ElevatedButton.styleFrom(
+        backgroundColor: _kGreen,
+        foregroundColor: Colors.white,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      ),
+    ),
+    floatingActionButtonTheme: const FloatingActionButtonThemeData(
+      backgroundColor: _kGreen,
+      foregroundColor: Colors.white,
+    ),
+    navigationBarTheme: NavigationBarThemeData(
+      indicatorColor: _kGreen.withOpacity(0.15),
+    ),
+  );
 
   ThemeData _buildDark() => ThemeData(
-        brightness: Brightness.dark,
-        useMaterial3: true,
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: _kGreen,
-          brightness: Brightness.dark,
-        ),
-        appBarTheme: AppBarTheme(
-          backgroundColor: Colors.grey[900],
-          foregroundColor: Colors.white,
-          elevation: 0,
-          centerTitle: false,
-        ),
-        cardTheme: CardThemeData(
-          elevation: 1,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-          surfaceTintColor: Colors.transparent,
-        ),
-        inputDecorationTheme: InputDecorationTheme(
-          border:
-              OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-          contentPadding:
-              const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-        ),
-        elevatedButtonTheme: ElevatedButtonThemeData(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: _kGreenAccent,
-            foregroundColor: Colors.white,
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-          ),
-        ),
-        floatingActionButtonTheme: const FloatingActionButtonThemeData(
-          backgroundColor: _kGreenAccent,
-          foregroundColor: Colors.white,
-        ),
-      );
+    brightness: Brightness.dark,
+    useMaterial3: true,
+    colorScheme: ColorScheme.fromSeed(
+      seedColor: _kGreen,
+      brightness: Brightness.dark,
+    ),
+    appBarTheme: AppBarTheme(
+      backgroundColor: Colors.grey[900],
+      foregroundColor: Colors.white,
+      elevation: 0,
+      centerTitle: false,
+    ),
+    cardTheme: CardThemeData(
+      elevation: 1,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      surfaceTintColor: Colors.transparent,
+    ),
+    inputDecorationTheme: InputDecorationTheme(
+      border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+    ),
+    elevatedButtonTheme: ElevatedButtonThemeData(
+      style: ElevatedButton.styleFrom(
+        backgroundColor: _kGreenAccent,
+        foregroundColor: Colors.white,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      ),
+    ),
+    floatingActionButtonTheme: const FloatingActionButtonThemeData(
+      backgroundColor: _kGreenAccent,
+      foregroundColor: Colors.white,
+    ),
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -755,41 +740,41 @@ class HomeScreen extends StatelessWidget {
     DashboardScreen(),
     MealEntryScreen(),
     ExpenseScreen(),
-    SettingsScreen(),
   ];
 
   @override
   Widget build(BuildContext context) {
     final ctrl = Get.find<MessController>();
-    return Obx(() => Scaffold(
-          body: IndexedStack(
-            index: ctrl.currentTabIndex.value,
-            children: _screens,
-          ),
-          bottomNavigationBar: NavigationBar(
-            selectedIndex: ctrl.currentTabIndex.value,
-            onDestinationSelected: (i) => ctrl.currentTabIndex.value = i,
-            labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
-            destinations: const [
-              NavigationDestination(
-                  icon: Icon(Icons.dashboard_outlined),
-                  selectedIcon: Icon(Icons.dashboard),
-                  label: 'Dashboard'),
-              NavigationDestination(
-                  icon: Icon(Icons.restaurant_outlined),
-                  selectedIcon: Icon(Icons.restaurant),
-                  label: 'Meals'),
-              NavigationDestination(
-                  icon: Icon(Icons.receipt_long_outlined),
-                  selectedIcon: Icon(Icons.receipt_long),
-                  label: 'Expenses'),
-              NavigationDestination(
-                  icon: Icon(Icons.settings_outlined),
-                  selectedIcon: Icon(Icons.settings),
-                  label: 'Settings'),
-            ],
-          ),
-        ));
+    return Obx(
+      () => Scaffold(
+        body: IndexedStack(
+          index: ctrl.currentTabIndex.value,
+          children: _screens,
+        ),
+        bottomNavigationBar: NavigationBar(
+          selectedIndex: ctrl.currentTabIndex.value,
+          onDestinationSelected: (i) => ctrl.currentTabIndex.value = i,
+          labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
+          destinations: const [
+            NavigationDestination(
+              icon: Icon(Icons.dashboard_outlined),
+              selectedIcon: Icon(Icons.dashboard),
+              label: 'Dashboard',
+            ),
+            NavigationDestination(
+              icon: Icon(Icons.restaurant_outlined),
+              selectedIcon: Icon(Icons.restaurant),
+              label: 'Meals',
+            ),
+            NavigationDestination(
+              icon: Icon(Icons.receipt_long_outlined),
+              selectedIcon: Icon(Icons.receipt_long),
+              label: 'Expenses',
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
 
@@ -799,6 +784,8 @@ class HomeScreen extends StatelessWidget {
 
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({super.key});
+
+  static final _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   Widget build(BuildContext context) {
@@ -814,7 +801,9 @@ class DashboardScreen extends StatelessWidget {
       final memberList = ctrl.members.toList();
 
       return Scaffold(
+        key: _scaffoldKey,
         backgroundColor: isDark ? Colors.grey[900] : const Color(0xFFF1F8E9),
+        drawer: _buildDrawer(context, ctrl),
         body: CustomScrollView(
           slivers: [
             // ── Hero App Bar ──────────────────────────────────────────────
@@ -822,6 +811,10 @@ class DashboardScreen extends StatelessWidget {
               expandedHeight: 160,
               pinned: true,
               backgroundColor: _kGreen,
+              leading: IconButton(
+                icon: const Icon(Icons.menu, color: Colors.white),
+                onPressed: () => _scaffoldKey.currentState?.openDrawer(),
+              ),
               flexibleSpace: FlexibleSpaceBar(
                 background: Container(
                   decoration: const BoxDecoration(
@@ -836,11 +829,14 @@ class DashboardScreen extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text('Mess Manager',
-                            style: TextStyle(
-                                color: Colors.white70,
-                                fontSize: 13,
-                                letterSpacing: 1.2)),
+                        const Text(
+                          'meal khata',
+                          style: TextStyle(
+                            color: Colors.white70,
+                            fontSize: 13,
+                            letterSpacing: 1.2,
+                          ),
+                        ),
                         const SizedBox(height: 4),
                         Row(
                           children: [
@@ -848,18 +844,21 @@ class DashboardScreen extends StatelessWidget {
                               child: Text(
                                 ctrl.monthLabel,
                                 style: const TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 22,
-                                    fontWeight: FontWeight.bold),
+                                  color: Colors.white,
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                             ),
                             _MonthNavBtn(
-                                icon: Icons.chevron_left,
-                                onTap: ctrl.prevMonth),
+                              icon: Icons.chevron_left,
+                              onTap: ctrl.prevMonth,
+                            ),
                             const SizedBox(width: 4),
                             _MonthNavBtn(
-                                icon: Icons.chevron_right,
-                                onTap: ctrl.nextMonth),
+                              icon: Icons.chevron_right,
+                              onTap: ctrl.nextMonth,
+                            ),
                           ],
                         ),
                       ],
@@ -913,24 +912,18 @@ class DashboardScreen extends StatelessWidget {
                     ],
                   ),
 
-                  const SizedBox(height: 16),
-
-                  // ── Outstanding balance banner ──────────────────────
-                  _BalanceBanner(
-                      totalExpenses: totalExpenses,
-                      totalPaid: totalPaid,
-                      totalDue: totalDue),
-
                   const SizedBox(height: 20),
 
                   // ── Member cost cards ─────────────────────────────────
                   if (memberList.isEmpty)
                     const _EmptyHint(
-                        message: 'No members yet.\nGo to Settings to add some.')
+                      message: 'No members yet.\nGo to Settings to add some.',
+                    )
                   else ...[
                     _SectionHeader(
-                        title: 'Member Breakdown',
-                        subtitle: '${memberList.length} members'),
+                      title: 'Member Breakdown',
+                      subtitle: '${memberList.length} members',
+                    ),
                     const SizedBox(height: 10),
                     ...memberList.map((m) {
                       final meals = ctrl.memberMeals(m.id);
@@ -984,6 +977,154 @@ class DashboardScreen extends StatelessWidget {
       );
     });
   }
+
+  Widget _buildDrawer(BuildContext context, MessController ctrl) {
+    return Drawer(
+      child: ListView(
+        padding: EdgeInsets.zero,
+        children: [
+          // Modern Header
+          Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [_kGreen, _kGreenAccent],
+              ),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(16, 40, 16, 24),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    width: 60,
+                    height: 60,
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Icon(
+                      Icons.restaurant_menu,
+                      color: Colors.white,
+                      size: 32,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  const Text(
+                    'meal khata',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Manage your shared expenses',
+                    style: TextStyle(
+                      color: Colors.white.withOpacity(0.8),
+                      fontSize: 12,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 12),
+          // Members
+          _DrawerItem(
+            icon: Icons.person_add_outlined,
+            title: 'Members',
+            onTap: () {
+              Navigator.pop(context);
+              Get.to(() => const MembersScreen());
+            },
+          ),
+          // Categories
+          _DrawerItem(
+            icon: Icons.label_outline,
+            title: 'Categories',
+            onTap: () {
+              Navigator.pop(context);
+              Get.to(() => const CategoriesScreen());
+            },
+          ),
+          const Divider(height: 24, indent: 16, endIndent: 16),
+          // Wipe Data
+          _DrawerItem(
+            icon: Icons.delete_forever_outlined,
+            title: 'Wipe All Data',
+            color: Colors.red,
+            onTap: () {
+              Navigator.pop(context);
+              _showWipeConfirm(context, ctrl);
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showWipeConfirm(BuildContext context, MessController ctrl) {
+    showDialog<void>(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Text('Wipe All Data?'),
+        content: const Text(
+          'This will permanently delete all members, meals, expenses, and payments. This action cannot be undone.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red,
+              foregroundColor: Colors.white,
+            ),
+            onPressed: () {
+              Navigator.pop(context);
+              ctrl.wipeAllData();
+              Get.snackbar(
+                'Success',
+                'All data has been wiped.',
+                snackPosition: SnackPosition.BOTTOM,
+              );
+            },
+            child: const Text('Wipe'),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _DrawerItem extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final Color color;
+  final VoidCallback onTap;
+
+  const _DrawerItem({
+    required this.icon,
+    required this.title,
+    required this.onTap,
+    this.color = _kGreen,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      leading: Icon(icon, color: color),
+      title: Text(
+        title,
+        style: TextStyle(fontWeight: FontWeight.w600, color: color),
+      ),
+      onTap: onTap,
+    );
+  }
 }
 
 class _MonthNavBtn extends StatelessWidget {
@@ -993,17 +1134,17 @@ class _MonthNavBtn extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => GestureDetector(
-        onTap: onTap,
-        child: Container(
-          width: 32,
-          height: 32,
-          decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.2),
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Icon(icon, color: Colors.white, size: 20),
-        ),
-      );
+    onTap: onTap,
+    child: Container(
+      width: 32,
+      height: 32,
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.2),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Icon(icon, color: Colors.white, size: 20),
+    ),
+  );
 }
 
 class _MiniStatCard extends StatelessWidget {
@@ -1049,94 +1190,20 @@ class _MiniStatCard extends StatelessWidget {
             child: Icon(icon, color: color, size: 18),
           ),
           const Spacer(),
-          Text(value,
-              style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: isDark ? Colors.white : Colors.grey[900])),
-          const SizedBox(height: 2),
-          Text(label,
-              style: TextStyle(fontSize: 11, color: Colors.grey[500]),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis),
-        ],
-      ),
-    );
-  }
-}
-
-class _BalanceBanner extends StatelessWidget {
-  final double totalExpenses;
-  final double totalPaid;
-  final double totalDue;
-
-  const _BalanceBanner({
-    required this.totalExpenses,
-    required this.totalPaid,
-    required this.totalDue,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final isSettled = totalDue <= 0.01;
-    final progress =
-        totalExpenses > 0 ? (totalPaid / totalExpenses).clamp(0.0, 1.0) : 0.0;
-
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: isSettled
-              ? [const Color(0xFF00695C), const Color(0xFF00897B)]
-              : [const Color(0xFFE65100), const Color(0xFFFF6D00)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(14),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(
-                  isSettled ? Icons.check_circle : Icons.pending_actions,
-                  color: Colors.white,
-                  size: 20),
-              const SizedBox(width: 8),
-              Text(
-                isSettled ? 'All payments settled!' : 'Outstanding Balance',
-                style: const TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 14),
-              ),
-              const Spacer(),
-              if (!isSettled)
-                Text(
-                  '৳${totalDue.toStringAsFixed(2)} due',
-                  style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 15),
-                ),
-            ],
-          ),
-          const SizedBox(height: 10),
-          ClipRRect(
-            borderRadius: BorderRadius.circular(4),
-            child: LinearProgressIndicator(
-              value: progress,
-              backgroundColor: Colors.white.withOpacity(0.25),
-              valueColor: const AlwaysStoppedAnimation<Color>(Colors.white),
-              minHeight: 6,
+          Text(
+            value,
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: isDark ? Colors.white : Colors.grey[900],
             ),
           ),
-          const SizedBox(height: 6),
+          const SizedBox(height: 2),
           Text(
-            '৳${totalPaid.toStringAsFixed(2)} collected of ৳${totalExpenses.toStringAsFixed(2)}',
-            style:
-                const TextStyle(color: Colors.white70, fontSize: 12),
+            label,
+            style: TextStyle(fontSize: 11, color: Colors.grey[500]),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
           ),
         ],
       ),
@@ -1187,9 +1254,10 @@ class _MemberCostCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(14),
         boxShadow: [
           BoxShadow(
-              color: Colors.black.withOpacity(0.05),
-              blurRadius: 6,
-              offset: const Offset(0, 2))
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 6,
+            offset: const Offset(0, 2),
+          ),
         ],
       ),
       child: Row(
@@ -1198,11 +1266,14 @@ class _MemberCostCard extends StatelessWidget {
           CircleAvatar(
             backgroundColor: _kGreen,
             radius: 22,
-            child: Text(member.name[0].toUpperCase(),
-                style: const TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16)),
+            child: Text(
+              (member.name.isNotEmpty ? member.name[0] : '?').toUpperCase(),
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+              ),
+            ),
           ),
           const SizedBox(width: 12),
           // Info
@@ -1210,11 +1281,14 @@ class _MemberCostCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(member.name,
-                    style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 15,
-                        color: isDark ? Colors.white : Colors.grey[900])),
+                Text(
+                  member.name,
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 15,
+                    color: isDark ? Colors.white : Colors.grey[900],
+                  ),
+                ),
                 const SizedBox(height: 2),
                 Text(
                   '${meals.toStringAsFixed(1)} meals  •  Cost ৳${grossCost.toStringAsFixed(2)}  •  Paid ৳${paid.toStringAsFixed(2)}',
@@ -1225,18 +1299,20 @@ class _MemberCostCard extends StatelessWidget {
           ),
           // Status chip
           Container(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
             decoration: BoxDecoration(
               color: statusColor.withOpacity(0.12),
               borderRadius: BorderRadius.circular(20),
               border: Border.all(color: statusColor.withOpacity(0.4)),
             ),
-            child: Text(statusLabel,
-                style: TextStyle(
-                    color: statusColor,
-                    fontSize: 11,
-                    fontWeight: FontWeight.bold)),
+            child: Text(
+              statusLabel,
+              style: TextStyle(
+                color: statusColor,
+                fontSize: 11,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
           ),
         ],
       ),
@@ -1251,16 +1327,19 @@ class _SectionHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Row(
-        children: [
-          Text(title,
-              style: const TextStyle(
-                  fontSize: 16, fontWeight: FontWeight.bold)),
-          const Spacer(),
-          if (subtitle != null)
-            Text(subtitle!,
-                style: TextStyle(fontSize: 12, color: Colors.grey[500])),
-        ],
-      );
+    children: [
+      Text(
+        title,
+        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+      ),
+      const Spacer(),
+      if (subtitle != null)
+        Text(
+          subtitle!,
+          style: TextStyle(fontSize: 12, color: Colors.grey[500]),
+        ),
+    ],
+  );
 }
 
 class _ActionButton extends StatelessWidget {
@@ -1287,10 +1366,7 @@ class _ActionButton extends StatelessWidget {
         decoration: BoxDecoration(
           color: isDark ? Colors.grey[850] : Colors.white,
           borderRadius: BorderRadius.circular(14),
-          border: Border.all(
-            color: color.withOpacity(0.3),
-            width: 2,
-          ),
+          border: Border.all(color: color.withOpacity(0.3), width: 2),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withOpacity(0.05),
@@ -1325,19 +1401,21 @@ class _EmptyHint extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Center(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 40),
-          child: Column(
-            children: [
-              Icon(Icons.inbox_outlined, size: 48, color: Colors.grey[400]),
-              const SizedBox(height: 12),
-              Text(message,
-                  textAlign: TextAlign.center,
-                  style: TextStyle(color: Colors.grey[500], fontSize: 14)),
-            ],
+    child: Padding(
+      padding: const EdgeInsets.symmetric(vertical: 40),
+      child: Column(
+        children: [
+          Icon(Icons.inbox_outlined, size: 48, color: Colors.grey[400]),
+          const SizedBox(height: 12),
+          Text(
+            message,
+            textAlign: TextAlign.center,
+            style: TextStyle(color: Colors.grey[500], fontSize: 14),
           ),
-        ),
-      );
+        ],
+      ),
+    ),
+  );
 }
 
 // ════════════════════════════════════════════════════════════════════════════
@@ -1354,7 +1432,6 @@ class MealEntryScreen extends StatefulWidget {
 class _MealEntryScreenState extends State<MealEntryScreen> {
   final _ctrl = Get.find<MessController>();
   DateTime _date = DateTime.now();
-  // memberId → controller
   final Map<String, TextEditingController> _textCtrls = {};
 
   String get _dateStr => DateFormat('yyyy-MM-dd').format(_date);
@@ -1362,17 +1439,18 @@ class _MealEntryScreenState extends State<MealEntryScreen> {
   @override
   void initState() {
     super.initState();
-    _rebuildControllers();
   }
 
-  void _rebuildControllers() {
-    for (final c in _textCtrls.values) c.dispose();
-    _textCtrls.clear();
-    for (final m in _ctrl.members) {
-      final v = _ctrl.getMeal(m.id, _dateStr);
-      _textCtrls[m.id] =
-          TextEditingController(text: v > 0 ? _fmt(v) : '');
+  TextEditingController _getOrCreateController(String memberId) {
+    if (!_textCtrls.containsKey(memberId)) {
+      final v = _ctrl.getMeal(memberId, _dateStr);
+      _textCtrls[memberId] = TextEditingController(
+        text: v > 0
+            ? (v == v.truncateToDouble() ? v.toInt().toString() : v.toString())
+            : '',
+      );
     }
+    return _textCtrls[memberId]!;
   }
 
   String _fmt(double v) =>
@@ -1405,7 +1483,13 @@ class _MealEntryScreenState extends State<MealEntryScreen> {
     );
     if (p != null) {
       _date = p;
-      _rebuildControllers();
+      // Update all controller values for the new date
+      for (final m in _ctrl.members) {
+        if (_textCtrls.containsKey(m.id)) {
+          final v = _ctrl.getMeal(m.id, _dateStr);
+          _textCtrls[m.id]!.text = v > 0 ? _fmt(v) : '';
+        }
+      }
       setState(() {});
     }
   }
@@ -1436,8 +1520,7 @@ class _MealEntryScreenState extends State<MealEntryScreen> {
   }
 
   void _snack(String msg) =>
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(msg)));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
 
   @override
   void dispose() {
@@ -1447,34 +1530,28 @@ class _MealEntryScreenState extends State<MealEntryScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Obx(() {
-      final memberList = _ctrl.members.toList();
-      // Keep controllers in sync when members change
-      for (final m in memberList) {
-        if (!_textCtrls.containsKey(m.id)) {
-          final v = _ctrl.getMeal(m.id, _dateStr);
-          _textCtrls[m.id] =
-              TextEditingController(text: v > 0 ? _fmt(v) : '');
-        }
-      }
-
-      return Scaffold(
-        appBar: AppBar(
-          title: const Text('Meal Entry'),
-          actions: [
-            IconButton(
-                icon: const Icon(Icons.copy_all),
-                tooltip: 'Copy Previous Day',
-                onPressed: _copyPrevDay),
-            IconButton(
-                icon: const Icon(Icons.save_outlined),
-                tooltip: 'Save',
-                onPressed: _save),
-          ],
-        ),
-        body: memberList.isEmpty
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Meal Entry'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.copy_all),
+            tooltip: 'Copy Previous Day',
+            onPressed: _copyPrevDay,
+          ),
+          IconButton(
+            icon: const Icon(Icons.save_outlined),
+            tooltip: 'Save',
+            onPressed: _save,
+          ),
+        ],
+      ),
+      body: Obx(() {
+        final memberList = _ctrl.members.toList();
+        return memberList.isEmpty
             ? const _EmptyHint(
-                message: 'No members yet.\nAdd members in Settings.')
+                message: 'No members yet.\nAdd members in Settings.',
+              )
             : Column(
                 children: [
                   // Date selector banner
@@ -1484,22 +1561,27 @@ class _MealEntryScreenState extends State<MealEntryScreen> {
                       onTap: _pickDate,
                       child: Padding(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 16, vertical: 12),
+                          horizontal: 16,
+                          vertical: 12,
+                        ),
                         child: Row(
                           children: [
-                            const Icon(Icons.calendar_today,
-                                color: _kGreen, size: 20),
+                            const Icon(
+                              Icons.calendar_today,
+                              color: _kGreen,
+                              size: 20,
+                            ),
                             const SizedBox(width: 10),
                             Text(
                               DateFormat('EEEE, dd MMMM yyyy').format(_date),
                               style: const TextStyle(
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.w600,
-                                  color: _kGreen),
+                                fontSize: 15,
+                                fontWeight: FontWeight.w600,
+                                color: _kGreen,
+                              ),
                             ),
                             const Spacer(),
-                            const Icon(Icons.arrow_drop_down,
-                                color: _kGreen),
+                            const Icon(Icons.arrow_drop_down, color: _kGreen),
                           ],
                         ),
                       ),
@@ -1516,49 +1598,62 @@ class _MealEntryScreenState extends State<MealEntryScreen> {
                           margin: const EdgeInsets.only(bottom: 8),
                           child: Padding(
                             padding: const EdgeInsets.symmetric(
-                                horizontal: 12, vertical: 10),
+                              horizontal: 12,
+                              vertical: 10,
+                            ),
                             child: Row(
                               children: [
                                 CircleAvatar(
                                   backgroundColor: _kGreen,
                                   radius: 20,
-                                  child: Text(m.name[0].toUpperCase(),
-                                      style: const TextStyle(
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.bold)),
+                                  child: Text(
+                                    (m.name.isNotEmpty ? m.name[0] : '?')
+                                        .toUpperCase(),
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
                                 ),
                                 const SizedBox(width: 12),
                                 Expanded(
-                                  child: Text(m.name,
-                                      style: const TextStyle(
-                                          fontSize: 15,
-                                          fontWeight: FontWeight.w500)),
+                                  child: Text(
+                                    m.name,
+                                    style: const TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
                                 ),
                                 // Decrement
                                 IconButton(
                                   icon: const Icon(
-                                      Icons.remove_circle_outline,
-                                      color: Colors.red),
-                                  onPressed: () =>
-                                      _decrement(m.id, 0.5),
+                                    Icons.remove_circle_outline,
+                                    color: Colors.red,
+                                  ),
+                                  onPressed: () => _decrement(m.id, 1),
                                   visualDensity: VisualDensity.compact,
                                 ),
                                 // Value field
                                 SizedBox(
                                   width: 64,
                                   child: TextField(
-                                    controller: _textCtrls[m.id],
+                                    controller: _getOrCreateController(m.id),
                                     keyboardType:
                                         const TextInputType.numberWithOptions(
-                                            decimal: true),
+                                          decimal: true,
+                                        ),
                                     textAlign: TextAlign.center,
                                     style: const TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 16),
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16,
+                                    ),
                                     decoration: const InputDecoration(
                                       hintText: '0',
                                       contentPadding: EdgeInsets.symmetric(
-                                          vertical: 8, horizontal: 4),
+                                        vertical: 8,
+                                        horizontal: 4,
+                                      ),
                                     ),
                                     onChanged: (_) => setState(() {}),
                                   ),
@@ -1566,10 +1661,10 @@ class _MealEntryScreenState extends State<MealEntryScreen> {
                                 // Increment
                                 IconButton(
                                   icon: const Icon(
-                                      Icons.add_circle_outline,
-                                      color: _kGreen),
-                                  onPressed: () =>
-                                      _increment(m.id, 0.5),
+                                    Icons.add_circle_outline,
+                                    color: _kGreen,
+                                  ),
+                                  onPressed: () => _increment(m.id, 1),
                                   visualDensity: VisualDensity.compact,
                                 ),
                               ],
@@ -1588,20 +1683,22 @@ class _MealEntryScreenState extends State<MealEntryScreen> {
                         width: double.infinity,
                         child: ElevatedButton.icon(
                           style: ElevatedButton.styleFrom(
-                              padding: const EdgeInsets.symmetric(
-                                  vertical: 14)),
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                          ),
                           icon: const Icon(Icons.save),
-                          label: const Text('Save Meals',
-                              style: TextStyle(fontSize: 16)),
+                          label: const Text(
+                            'Save Meals',
+                            style: TextStyle(fontSize: 16),
+                          ),
                           onPressed: _save,
                         ),
                       ),
                     ),
                   ),
                 ],
-              ),
-      );
-    });
+              );
+      }),
+    );
   }
 }
 
@@ -1617,14 +1714,11 @@ class ExpenseScreen extends StatelessWidget {
     final ctrl = Get.find<MessController>();
 
     return Obx(() {
-      final list = ctrl.monthExpenses
-        ..sort((a, b) => b.date.compareTo(a.date));
+      final list = ctrl.monthExpenses..sort((a, b) => b.date.compareTo(a.date));
       final total = ctrl.totalExpenses;
 
       return Scaffold(
-        appBar: AppBar(
-          title: Text('Expenses — ${ctrl.monthLabel}'),
-        ),
+        appBar: AppBar(title: Text('Expenses — ${ctrl.monthLabel}')),
         floatingActionButton: FloatingActionButton.extended(
           heroTag: 'expense_fab',
           onPressed: () => _showExpenseDialog(context, ctrl),
@@ -1636,29 +1730,33 @@ class ExpenseScreen extends StatelessWidget {
             // total bar
             Container(
               color: _kGreen.withOpacity(0.08),
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               child: Row(
                 children: [
-                  const Icon(Icons.account_balance_wallet_outlined,
-                      color: _kGreen, size: 20),
+                  const Icon(
+                    Icons.account_balance_wallet_outlined,
+                    color: _kGreen,
+                    size: 20,
+                  ),
                   const SizedBox(width: 8),
-                  const Text('Total Expenses',
-                      style: TextStyle(fontSize: 14)),
+                  const Text('Total Expenses', style: TextStyle(fontSize: 14)),
                   const Spacer(),
-                  Text('৳${total.toStringAsFixed(2)}',
-                      style: const TextStyle(
-                          fontSize: 17,
-                          fontWeight: FontWeight.bold,
-                          color: _kGreen)),
+                  Text(
+                    '৳${total.toStringAsFixed(2)}',
+                    style: const TextStyle(
+                      fontSize: 17,
+                      fontWeight: FontWeight.bold,
+                      color: _kGreen,
+                    ),
+                  ),
                 ],
               ),
             ),
             Expanded(
               child: list.isEmpty
                   ? const _EmptyHint(
-                      message:
-                          'No expenses this month.\nTap + to add one.')
+                      message: 'No expenses this month.\nTap + to add one.',
+                    )
                   : ListView.builder(
                       padding: const EdgeInsets.fromLTRB(12, 8, 12, 80),
                       itemCount: list.length,
@@ -1668,15 +1766,20 @@ class ExpenseScreen extends StatelessWidget {
                           margin: const EdgeInsets.only(bottom: 8),
                           child: ListTile(
                             leading: CircleAvatar(
-                              backgroundColor:
-                                  Colors.redAccent.withOpacity(0.15),
-                              child: const Icon(Icons.receipt_long,
-                                  color: Colors.redAccent, size: 20),
+                              backgroundColor: Colors.redAccent.withOpacity(
+                                0.15,
+                              ),
+                              child: const Icon(
+                                Icons.receipt_long,
+                                color: Colors.redAccent,
+                                size: 20,
+                              ),
                             ),
                             title: Text(
                               '${e.category}   ৳${e.amount.toStringAsFixed(2)}',
                               style: const TextStyle(
-                                  fontWeight: FontWeight.w600),
+                                fontWeight: FontWeight.w600,
+                              ),
                             ),
                             subtitle: Text(
                               '${e.date}${e.note.isNotEmpty ? '  •  ${e.note}' : ''}',
@@ -1686,18 +1789,24 @@ class ExpenseScreen extends StatelessWidget {
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 IconButton(
-                                  icon: const Icon(Icons.edit_outlined,
-                                      size: 20),
+                                  icon: const Icon(
+                                    Icons.edit_outlined,
+                                    size: 20,
+                                  ),
                                   onPressed: () => _showExpenseDialog(
-                                      context, ctrl,
-                                      existing: e),
+                                    context,
+                                    ctrl,
+                                    existing: e,
+                                  ),
                                   visualDensity: VisualDensity.compact,
                                 ),
                                 IconButton(
-                                  icon: const Icon(Icons.delete_outline,
-                                      size: 20, color: Colors.red),
-                                  onPressed: () =>
-                                      ctrl.deleteExpense(e.id),
+                                  icon: const Icon(
+                                    Icons.delete_outline,
+                                    size: 20,
+                                    color: Colors.red,
+                                  ),
+                                  onPressed: () => ctrl.deleteExpense(e.id),
                                   visualDensity: VisualDensity.compact,
                                 ),
                               ],
@@ -1718,11 +1827,12 @@ class ExpenseScreen extends StatelessWidget {
     MessController ctrl, {
     Expense? existing,
   }) async {
-    final amtCtrl =
-        TextEditingController(text: existing?.amount.toString() ?? '');
-    final noteCtrl =
-        TextEditingController(text: existing?.note ?? '');
-    String category = existing?.category ??
+    final amtCtrl = TextEditingController(
+      text: existing?.amount.toString() ?? '',
+    );
+    final noteCtrl = TextEditingController(text: existing?.note ?? '');
+    String category =
+        existing?.category ??
         (ctrl.categories.isNotEmpty ? ctrl.categories.first : '');
     DateTime date = existing != null
         ? DateFormat('yyyy-MM-dd').parse(existing.date)
@@ -1732,8 +1842,7 @@ class ExpenseScreen extends StatelessWidget {
       context: context,
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setSt) => AlertDialog(
-          title:
-              Text(existing == null ? 'Add Expense' : 'Edit Expense'),
+          title: Text(existing == null ? 'Add Expense' : 'Edit Expense'),
           content: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -1742,14 +1851,14 @@ class ExpenseScreen extends StatelessWidget {
                 ListTile(
                   contentPadding: EdgeInsets.zero,
                   leading: const Icon(Icons.calendar_today),
-                  title:
-                      Text(DateFormat('dd MMM yyyy').format(date)),
+                  title: Text(DateFormat('dd MMM yyyy').format(date)),
                   onTap: () async {
                     final p = await showDatePicker(
-                        context: ctx,
-                        initialDate: date,
-                        firstDate: DateTime(2020),
-                        lastDate: DateTime(2030));
+                      context: ctx,
+                      initialDate: date,
+                      firstDate: DateTime(2020),
+                      lastDate: DateTime(2030),
+                    );
                     if (p != null) setSt(() => date = p);
                   },
                 ),
@@ -1757,57 +1866,63 @@ class ExpenseScreen extends StatelessWidget {
                 const SizedBox(height: 12),
                 TextField(
                   controller: amtCtrl,
-                  keyboardType:
-                      const TextInputType.numberWithOptions(decimal: true),
+                  keyboardType: const TextInputType.numberWithOptions(
+                    decimal: true,
+                  ),
                   decoration: const InputDecoration(
-                      labelText: 'Amount (৳)', prefixText: '৳ '),
+                    labelText: 'Amount (৳)',
+                    prefixText: '৳ ',
+                  ),
                 ),
                 const SizedBox(height: 12),
-                Obx(() => DropdownButtonFormField<String>(
-                      value: ctrl.categories.contains(category)
-                          ? category
-                          : null,
-                      items: ctrl.categories
-                          .map((c) => DropdownMenuItem(
-                              value: c, child: Text(c)))
-                          .toList(),
-                      onChanged: (v) =>
-                          setSt(() => category = v ?? ''),
-                      decoration: const InputDecoration(
-                          labelText: 'Category'),
-                    )),
+                Obx(
+                  () => DropdownButtonFormField<String>(
+                    value: ctrl.categories.contains(category) ? category : null,
+                    items: ctrl.categories
+                        .map((c) => DropdownMenuItem(value: c, child: Text(c)))
+                        .toList(),
+                    onChanged: (v) => setSt(() => category = v ?? ''),
+                    decoration: const InputDecoration(labelText: 'Category'),
+                  ),
+                ),
                 const SizedBox(height: 12),
                 TextField(
                   controller: noteCtrl,
                   decoration: const InputDecoration(
-                      labelText: 'Note (optional)'),
+                    labelText: 'Note (optional)',
+                  ),
                 ),
               ],
             ),
           ),
           actions: [
             TextButton(
-                onPressed: () => Navigator.pop(ctx),
-                child: const Text('Cancel')),
+              onPressed: () => Navigator.pop(ctx),
+              child: const Text('Cancel'),
+            ),
             ElevatedButton(
               onPressed: () {
-                final amt =
-                    double.tryParse(amtCtrl.text.trim());
+                final amt = double.tryParse(amtCtrl.text.trim());
                 if (amt == null || amt <= 0) {
-                  Get.snackbar('Error', 'Enter a valid amount.',
-                      snackPosition: SnackPosition.BOTTOM);
+                  Get.snackbar(
+                    'Error',
+                    'Enter a valid amount.',
+                    snackPosition: SnackPosition.BOTTOM,
+                  );
                   return;
                 }
                 if (category.isEmpty) {
-                  Get.snackbar('Error', 'Select a category.',
-                      snackPosition: SnackPosition.BOTTOM);
+                  Get.snackbar(
+                    'Error',
+                    'Select a category.',
+                    snackPosition: SnackPosition.BOTTOM,
+                  );
                   return;
                 }
                 final exp = Expense(
-                  id: existing?.id ??
-                      DateTime.now()
-                          .millisecondsSinceEpoch
-                          .toString(),
+                  id:
+                      existing?.id ??
+                      DateTime.now().millisecondsSinceEpoch.toString(),
                   date: DateFormat('yyyy-MM-dd').format(date),
                   amount: amt,
                   category: category,
@@ -1850,9 +1965,7 @@ class PaymentScreen extends StatelessWidget {
       final netDue = totalExpenses - totalPaid;
 
       return Scaffold(
-        appBar: AppBar(
-          title: Text('Payments — ${ctrl.monthLabel}'),
-        ),
+        appBar: AppBar(title: Text('Payments — ${ctrl.monthLabel}')),
         floatingActionButton: memberList.isEmpty
             ? null
             : FloatingActionButton.extended(
@@ -1867,44 +1980,42 @@ class PaymentScreen extends StatelessWidget {
             // Summary row
             Container(
               color: _kGreen.withOpacity(0.08),
-              padding: const EdgeInsets.symmetric(
-                  horizontal: 16, vertical: 12),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               child: Row(
                 children: [
                   _PayStat(
-                      label: 'Total Expenses',
-                      value: '৳${totalExpenses.toStringAsFixed(2)}',
-                      color: Colors.red),
+                    label: 'Total Expenses',
+                    value: '৳${totalExpenses.toStringAsFixed(2)}',
+                    color: Colors.red,
+                  ),
                   const SizedBox(width: 12),
                   _PayStat(
-                      label: 'Total Paid',
-                      value: '৳${totalPaid.toStringAsFixed(2)}',
-                      color: Colors.teal),
+                    label: 'Total Paid',
+                    value: '৳${totalPaid.toStringAsFixed(2)}',
+                    color: Colors.teal,
+                  ),
                   const SizedBox(width: 12),
                   _PayStat(
-                      label: netDue > 0 ? 'Due' : 'Advance',
-                      value: '৳${netDue.abs().toStringAsFixed(2)}',
-                      color:
-                          netDue > 0.01 ? Colors.orange : Colors.green),
+                    label: netDue > 0 ? 'Due' : 'Advance',
+                    value: '৳${netDue.abs().toStringAsFixed(2)}',
+                    color: netDue > 0.01 ? Colors.orange : Colors.green,
+                  ),
                 ],
               ),
             ),
 
             Expanded(
               child: memberList.isEmpty
-                  ? const _EmptyHint(
-                      message: 'Add members in Settings first.')
+                  ? const _EmptyHint(message: 'Add members in Settings first.')
                   : ListView.builder(
-                      padding:
-                          const EdgeInsets.fromLTRB(12, 8, 12, 80),
+                      padding: const EdgeInsets.fromLTRB(12, 8, 12, 80),
                       itemCount: memberList.length,
                       itemBuilder: (_, i) {
                         final m = memberList[i];
                         final gross = ctrl.memberGrossCost(m.id);
                         final paid = ctrl.memberPaid(m.id);
                         final balance = ctrl.memberBalance(m.id);
-                        final memberPayments =
-                            ctrl.memberMonthPayments(m.id);
+                        final memberPayments = ctrl.memberMonthPayments(m.id);
 
                         return _MemberPaymentTile(
                           member: m,
@@ -1944,74 +2055,75 @@ class PaymentScreen extends StatelessWidget {
                 DropdownButtonFormField<String>(
                   value: selectedMemberId,
                   items: members
-                      .map((m) => DropdownMenuItem(
-                          value: m.id, child: Text(m.name)))
+                      .map(
+                        (m) =>
+                            DropdownMenuItem(value: m.id, child: Text(m.name)),
+                      )
                       .toList(),
-                  onChanged: (v) =>
-                      setSt(() => selectedMemberId = v ?? ''),
-                  decoration:
-                      const InputDecoration(labelText: 'Member'),
+                  onChanged: (v) => setSt(() => selectedMemberId = v ?? ''),
+                  decoration: const InputDecoration(labelText: 'Member'),
                 ),
                 const SizedBox(height: 12),
                 // Quick-fill balance button
                 Obx(() {
-                  final balance =
-                      ctrl.memberBalance(selectedMemberId);
+                  final balance = ctrl.memberBalance(selectedMemberId);
                   if (balance <= 0) return const SizedBox.shrink();
                   return Align(
                     alignment: Alignment.centerRight,
                     child: TextButton.icon(
                       onPressed: () {
-                        amtCtrl.text =
-                            balance.toStringAsFixed(2);
+                        amtCtrl.text = balance.toStringAsFixed(2);
                       },
-                      icon: const Icon(Icons.auto_fix_high,
-                          size: 16),
-                      label: Text(
-                          'Fill due: ৳${balance.toStringAsFixed(2)}'),
+                      icon: const Icon(Icons.auto_fix_high, size: 16),
+                      label: Text('Fill due: ৳${balance.toStringAsFixed(2)}'),
                     ),
                   );
                 }),
                 TextField(
                   controller: amtCtrl,
-                  keyboardType:
-                      const TextInputType.numberWithOptions(
-                          decimal: true),
+                  keyboardType: const TextInputType.numberWithOptions(
+                    decimal: true,
+                  ),
                   decoration: const InputDecoration(
-                      labelText: 'Amount (৳)',
-                      prefixText: '৳ '),
+                    labelText: 'Amount (৳)',
+                    prefixText: '৳ ',
+                  ),
                 ),
                 const SizedBox(height: 12),
                 TextField(
                   controller: noteCtrl,
                   decoration: const InputDecoration(
-                      labelText: 'Note (optional)'),
+                    labelText: 'Note (optional)',
+                  ),
                 ),
               ],
             ),
           ),
           actions: [
             TextButton(
-                onPressed: () => Navigator.pop(ctx),
-                child: const Text('Cancel')),
+              onPressed: () => Navigator.pop(ctx),
+              child: const Text('Cancel'),
+            ),
             ElevatedButton(
               onPressed: () {
-                final amt =
-                    double.tryParse(amtCtrl.text.trim());
+                final amt = double.tryParse(amtCtrl.text.trim());
                 if (amt == null || amt <= 0) {
-                  Get.snackbar('Error', 'Enter a valid amount.',
-                      snackPosition: SnackPosition.BOTTOM);
+                  Get.snackbar(
+                    'Error',
+                    'Enter a valid amount.',
+                    snackPosition: SnackPosition.BOTTOM,
+                  );
                   return;
                 }
-                ctrl.addPayment(Payment(
-                  id: DateTime.now()
-                      .millisecondsSinceEpoch
-                      .toString(),
-                  memberId: selectedMemberId,
-                  month: ctrl.selectedMonth.value,
-                  amount: amt,
-                  note: noteCtrl.text.trim(),
-                ));
+                ctrl.addPayment(
+                  Payment(
+                    id: DateTime.now().millisecondsSinceEpoch.toString(),
+                    memberId: selectedMemberId,
+                    month: ctrl.selectedMonth.value,
+                    amount: amt,
+                    note: noteCtrl.text.trim(),
+                  ),
+                );
                 Navigator.pop(ctx);
               },
               child: const Text('Save'),
@@ -2039,20 +2151,22 @@ class _PayStat extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Expanded(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(label,
-                style: TextStyle(fontSize: 10, color: Colors.grey[600])),
-            const SizedBox(height: 2),
-            Text(value,
-                style: TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.bold,
-                    color: color)),
-          ],
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(label, style: TextStyle(fontSize: 10, color: Colors.grey[600])),
+        const SizedBox(height: 2),
+        Text(
+          value,
+          style: TextStyle(
+            fontSize: 13,
+            fontWeight: FontWeight.bold,
+            color: color,
+          ),
         ),
-      );
+      ],
+    ),
+  );
 }
 
 class _MemberPaymentTile extends StatelessWidget {
@@ -2079,63 +2193,81 @@ class _MemberPaymentTile extends StatelessWidget {
     final statusText = isDue
         ? 'Due ৳${balance.toStringAsFixed(2)}'
         : balance < -0.01
-            ? 'Adv ৳${balance.abs().toStringAsFixed(2)}'
-            : 'Settled';
+        ? 'Adv ৳${balance.abs().toStringAsFixed(2)}'
+        : 'Settled';
 
     return Card(
       margin: const EdgeInsets.only(bottom: 10),
       child: ExpansionTile(
         leading: CircleAvatar(
           backgroundColor: _kGreen,
-          child: Text(member.name[0].toUpperCase(),
-              style: const TextStyle(
-                  color: Colors.white, fontWeight: FontWeight.bold)),
+          child: Text(
+            (member.name.isNotEmpty ? member.name[0] : '?').toUpperCase(),
+            style: const TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
         ),
-        title: Text(member.name,
-            style: const TextStyle(fontWeight: FontWeight.w600)),
+        title: Text(
+          member.name,
+          style: const TextStyle(fontWeight: FontWeight.w600),
+        ),
         subtitle: Text(
           'Gross ৳${grossCost.toStringAsFixed(2)}  •  Paid ৳${paid.toStringAsFixed(2)}',
           style: const TextStyle(fontSize: 12),
         ),
         trailing: Container(
-          padding:
-              const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
           decoration: BoxDecoration(
             color: statusColor.withOpacity(0.12),
             borderRadius: BorderRadius.circular(20),
             border: Border.all(color: statusColor.withOpacity(0.4)),
           ),
-          child: Text(statusText,
-              style: TextStyle(
-                  color: statusColor,
-                  fontSize: 11,
-                  fontWeight: FontWeight.bold)),
+          child: Text(
+            statusText,
+            style: TextStyle(
+              color: statusColor,
+              fontSize: 11,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
         ),
         children: [
           if (payments.isEmpty)
             const Padding(
               padding: EdgeInsets.all(16),
-              child: Text('No payments recorded.',
-                  style: TextStyle(color: Colors.grey)),
+              child: Text(
+                'No payments recorded.',
+                style: TextStyle(color: Colors.grey),
+              ),
             )
           else
-            ...payments.map((p) => ListTile(
-                  dense: true,
-                  contentPadding:
-                      const EdgeInsets.symmetric(horizontal: 20),
-                  leading: const Icon(Icons.payments_outlined,
-                      color: Colors.teal, size: 18),
-                  title: Text('৳${p.amount.toStringAsFixed(2)}',
-                      style: const TextStyle(
-                          fontWeight: FontWeight.w600)),
-                  subtitle: p.note.isNotEmpty ? Text(p.note) : null,
-                  trailing: IconButton(
-                    icon: const Icon(Icons.delete_outline,
-                        color: Colors.red, size: 20),
-                    onPressed: () => onDelete(p.id),
-                    visualDensity: VisualDensity.compact,
+            ...payments.map(
+              (p) => ListTile(
+                dense: true,
+                contentPadding: const EdgeInsets.symmetric(horizontal: 20),
+                leading: const Icon(
+                  Icons.payments_outlined,
+                  color: Colors.teal,
+                  size: 18,
+                ),
+                title: Text(
+                  '৳${p.amount.toStringAsFixed(2)}',
+                  style: const TextStyle(fontWeight: FontWeight.w600),
+                ),
+                subtitle: p.note.isNotEmpty ? Text(p.note) : null,
+                trailing: IconButton(
+                  icon: const Icon(
+                    Icons.delete_outline,
+                    color: Colors.red,
+                    size: 20,
                   ),
-                )),
+                  onPressed: () => onDelete(p.id),
+                  visualDensity: VisualDensity.compact,
+                ),
+              ),
+            ),
         ],
       ),
     );
@@ -2194,14 +2326,17 @@ class SummaryScreen extends StatelessWidget {
                     ),
                     child: Column(
                       children: [
-                        _SumRow('Total Meals',
-                            totalMeals.toStringAsFixed(2)),
+                        _SumRow('Total Meals', totalMeals.toStringAsFixed(2)),
                         const Divider(color: Colors.white24, height: 16),
-                        _SumRow('Total Expenses',
-                            '৳${totalExpenses.toStringAsFixed(2)}'),
+                        _SumRow(
+                          'Total Expenses',
+                          '৳${totalExpenses.toStringAsFixed(2)}',
+                        ),
                         const Divider(color: Colors.white24, height: 16),
-                        _SumRow('Meal Rate (per meal)',
-                            '৳${rate.toStringAsFixed(4)}'),
+                        _SumRow(
+                          'Meal Rate (per meal)',
+                          '৳${rate.toStringAsFixed(4)}',
+                        ),
                       ],
                     ),
                   ),
@@ -2230,20 +2365,25 @@ class SummaryScreen extends StatelessWidget {
                   if (byCat.isNotEmpty) ...[
                     const _SectionHeader(title: 'Expense by Category'),
                     const SizedBox(height: 10),
-                    ...byCat.entries.map((en) => Card(
-                          margin: const EdgeInsets.only(bottom: 8),
-                          child: ListTile(
-                            leading: const Icon(Icons.label_outline,
-                                color: _kGreenAccent),
-                            title: Text(en.key),
-                            trailing: Text(
-                              '৳${en.value.toStringAsFixed(2)}',
-                              style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: _kGreen),
+                    ...byCat.entries.map(
+                      (en) => Card(
+                        margin: const EdgeInsets.only(bottom: 8),
+                        child: ListTile(
+                          leading: const Icon(
+                            Icons.label_outline,
+                            color: _kGreenAccent,
+                          ),
+                          title: Text(en.key),
+                          trailing: Text(
+                            '৳${en.value.toStringAsFixed(2)}',
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: _kGreen,
                             ),
                           ),
-                        )),
+                        ),
+                      ),
+                    ),
                   ],
                 ],
               ),
@@ -2259,18 +2399,19 @@ class _SumRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(label,
-              style: const TextStyle(
-                  color: Colors.white70, fontSize: 13)),
-          Text(value,
-              style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 14)),
-        ],
-      );
+    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    children: [
+      Text(label, style: const TextStyle(color: Colors.white70, fontSize: 13)),
+      Text(
+        value,
+        style: const TextStyle(
+          color: Colors.white,
+          fontWeight: FontWeight.bold,
+          fontSize: 14,
+        ),
+      ),
+    ],
+  );
 }
 
 class _SummaryMemberCard extends StatelessWidget {
@@ -2296,8 +2437,8 @@ class _SummaryMemberCard extends StatelessWidget {
     String balLabel = isAdv
         ? 'Advance: ৳${balance.abs().toStringAsFixed(2)}'
         : isDue
-            ? 'Due: ৳${balance.toStringAsFixed(2)}'
-            : 'Settled ✓';
+        ? 'Due: ৳${balance.toStringAsFixed(2)}'
+        : 'Settled ✓';
 
     return Card(
       margin: const EdgeInsets.only(bottom: 10),
@@ -2311,35 +2452,43 @@ class _SummaryMemberCard extends StatelessWidget {
                 CircleAvatar(
                   backgroundColor: _kGreen,
                   radius: 18,
-                  child: Text(member.name[0].toUpperCase(),
-                      style: const TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold)),
+                  child: Text(
+                    (member.name.isNotEmpty ? member.name[0] : '?')
+                        .toUpperCase(),
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                 ),
                 const SizedBox(width: 10),
-                Text(member.name,
-                    style: const TextStyle(
-                        fontWeight: FontWeight.bold, fontSize: 15)),
+                Text(
+                  member.name,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 15,
+                  ),
+                ),
                 const Spacer(),
-                Text(balLabel,
-                    style: TextStyle(
-                        color: balColor,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 13)),
+                Text(
+                  balLabel,
+                  style: TextStyle(
+                    color: balColor,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 13,
+                  ),
+                ),
               ],
             ),
             const SizedBox(height: 10),
             Row(
               children: [
+                _SmallStat(label: 'Meals', value: meals.toStringAsFixed(2)),
                 _SmallStat(
-                    label: 'Meals',
-                    value: meals.toStringAsFixed(2)),
-                _SmallStat(
-                    label: 'Meal Cost',
-                    value: '৳${grossCost.toStringAsFixed(2)}'),
-                _SmallStat(
-                    label: 'Paid',
-                    value: '৳${paid.toStringAsFixed(2)}'),
+                  label: 'Meal Cost',
+                  value: '৳${grossCost.toStringAsFixed(2)}',
+                ),
+                _SmallStat(label: 'Paid', value: '৳${paid.toStringAsFixed(2)}'),
               ],
             ),
           ],
@@ -2356,81 +2505,26 @@ class _SmallStat extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Expanded(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(label,
-                style: TextStyle(fontSize: 10, color: Colors.grey[500])),
-            const SizedBox(height: 2),
-            Text(value,
-                style: const TextStyle(
-                    fontWeight: FontWeight.w600, fontSize: 13)),
-          ],
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(label, style: TextStyle(fontSize: 10, color: Colors.grey[500])),
+        const SizedBox(height: 2),
+        Text(
+          value,
+          style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13),
         ),
-      );
+      ],
+    ),
+  );
 }
 
 // ════════════════════════════════════════════════════════════════════════════
-// SETTINGS SCREEN
+// MEMBERS SCREEN
 // ════════════════════════════════════════════════════════════════════════════
 
-class SettingsScreen extends StatefulWidget {
-  const SettingsScreen({super.key});
-
-  @override
-  State<SettingsScreen> createState() => _SettingsScreenState();
-}
-
-class _SettingsScreenState extends State<SettingsScreen>
-    with SingleTickerProviderStateMixin {
-  late TabController _tab;
-
-  @override
-  void initState() {
-    super.initState();
-    _tab = TabController(length: 3, vsync: this);
-  }
-
-  @override
-  void dispose() {
-    _tab.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Settings'),
-        bottom: TabBar(
-          controller: _tab,
-          labelColor: Colors.white,
-          unselectedLabelColor: Colors.white70,
-          indicatorColor: Colors.white,
-          isScrollable: true,
-          tabs: const [
-            Tab(text: 'Members'),
-            Tab(text: 'Categories'),
-            Tab(text: 'Backup'),
-          ],
-        ),
-      ),
-      body: TabBarView(
-        controller: _tab,
-        children: const [
-          _MembersTab(),
-          _CategoriesTab(),
-          _BackupTab(),
-        ],
-      ),
-    );
-  }
-}
-
-// ── Members Tab ──────────────────────────────────────────────────────────────
-
-class _MembersTab extends StatelessWidget {
-  const _MembersTab();
+class MembersScreen extends StatelessWidget {
+  const MembersScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -2438,74 +2532,59 @@ class _MembersTab extends StatelessWidget {
 
     return Obx(() {
       final memberList = ctrl.members.toList();
-      return Column(
-        children: [
-          Expanded(
-            child: memberList.isEmpty
-                ? const _EmptyHint(
-                    message: 'No members yet.\nTap + to add.')
-                : ReorderableListView.builder(
-                    padding: const EdgeInsets.all(8),
-                    itemCount: memberList.length,
-                    itemBuilder: (_, i) {
-                      final m = memberList[i];
-                      return Card(
-                        key: ValueKey(m.id),
-                        margin: const EdgeInsets.only(bottom: 6),
-                        child: ListTile(
-                          leading: CircleAvatar(
-                            backgroundColor: _kGreen,
-                            child: Text(m.name[0].toUpperCase(),
-                                style: const TextStyle(
-                                    color: Colors.white)),
-                          ),
-                          title: Text(m.name),
-                          trailing: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              IconButton(
-                                icon: const Icon(Icons.edit_outlined,
-                                    size: 20),
-                                onPressed: () =>
-                                    _editDialog(context, ctrl, m),
-                              ),
-                              IconButton(
-                                icon: const Icon(
-                                    Icons.delete_outline,
-                                    size: 20,
-                                    color: Colors.red),
-                                onPressed: () =>
-                                    _deleteConfirm(context, ctrl, m),
-                              ),
-                            ],
-                          ),
+      return Scaffold(
+        appBar: AppBar(title: const Text('Members')),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () => _showAddDialog(context, ctrl),
+          child: const Icon(Icons.add),
+        ),
+        body: memberList.isEmpty
+            ? const _EmptyHint(message: 'No members yet.\nTap + to add.')
+            : ReorderableListView.builder(
+                padding: const EdgeInsets.all(8),
+                itemCount: memberList.length,
+                itemBuilder: (_, i) {
+                  final m = memberList[i];
+                  return Card(
+                    key: ValueKey(m.id),
+                    margin: const EdgeInsets.only(bottom: 6),
+                    child: ListTile(
+                      leading: CircleAvatar(
+                        backgroundColor: _kGreen,
+                        child: Text(
+                          (m.name.isNotEmpty ? m.name[0] : '?').toUpperCase(),
+                          style: const TextStyle(color: Colors.white),
                         ),
-                      );
-                    },
-                    onReorder: ctrl.reorderMembers,
-                  ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: SizedBox(
-              width: double.infinity,
-              child: ElevatedButton.icon(
-                style: ElevatedButton.styleFrom(
-                    padding:
-                        const EdgeInsets.symmetric(vertical: 12)),
-                icon: const Icon(Icons.person_add),
-                label: const Text('Add Member'),
-                onPressed: () => _addDialog(context, ctrl),
+                      ),
+                      title: Text(m.name),
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconButton(
+                            icon: const Icon(Icons.edit_outlined, size: 20),
+                            onPressed: () => _showEditDialog(context, ctrl, m),
+                          ),
+                          IconButton(
+                            icon: const Icon(
+                              Icons.delete_outline,
+                              size: 20,
+                              color: Colors.red,
+                            ),
+                            onPressed: () =>
+                                _showDeleteConfirm(context, ctrl, m),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+                onReorder: ctrl.reorderMembers,
               ),
-            ),
-          ),
-        ],
       );
     });
   }
 
-  Future<void> _addDialog(
-      BuildContext context, MessController ctrl) async {
+  Future<void> _showAddDialog(BuildContext context, MessController ctrl) async {
     final c = TextEditingController();
     await showDialog<void>(
       context: context,
@@ -2519,8 +2598,9 @@ class _MembersTab extends StatelessWidget {
         ),
         actions: [
           TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('Cancel')),
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
           ElevatedButton(
             onPressed: () {
               if (c.text.trim().isNotEmpty) {
@@ -2536,8 +2616,11 @@ class _MembersTab extends StatelessWidget {
     c.dispose();
   }
 
-  Future<void> _editDialog(
-      BuildContext context, MessController ctrl, Member m) async {
+  Future<void> _showEditDialog(
+    BuildContext context,
+    MessController ctrl,
+    Member m,
+  ) async {
     final c = TextEditingController(text: m.name);
     await showDialog<void>(
       context: context,
@@ -2551,8 +2634,9 @@ class _MembersTab extends StatelessWidget {
         ),
         actions: [
           TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('Cancel')),
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
           ElevatedButton(
             onPressed: () {
               if (c.text.trim().isNotEmpty) {
@@ -2568,22 +2652,24 @@ class _MembersTab extends StatelessWidget {
     c.dispose();
   }
 
-  void _deleteConfirm(
-      BuildContext context, MessController ctrl, Member m) {
+  void _showDeleteConfirm(BuildContext context, MessController ctrl, Member m) {
     showDialog<void>(
       context: context,
       builder: (_) => AlertDialog(
         title: const Text('Delete Member?'),
         content: Text(
-            'Remove "${m.name}"? All meal and payment records for this member will also be removed.'),
+          'Remove "${m.name}"? All meal and payment records for this member will also be removed.',
+        ),
         actions: [
           TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('Cancel')),
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.red,
-                foregroundColor: Colors.white),
+              backgroundColor: Colors.red,
+              foregroundColor: Colors.white,
+            ),
             onPressed: () {
               Navigator.pop(context);
               ctrl.deleteMember(m.id);
@@ -2596,59 +2682,53 @@ class _MembersTab extends StatelessWidget {
   }
 }
 
-// ── Categories Tab ────────────────────────────────────────────────────────────
+// ════════════════════════════════════════════════════════════════════════════
+// CATEGORIES SCREEN
+// ════════════════════════════════════════════════════════════════════════════
 
-class _CategoriesTab extends StatelessWidget {
-  const _CategoriesTab();
+class CategoriesScreen extends StatelessWidget {
+  const CategoriesScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     final ctrl = Get.find<MessController>();
 
-    return Obx(() => Column(
-          children: [
-            Expanded(
-              child: ctrl.categories.isEmpty
-                  ? const _EmptyHint(message: 'No categories yet.')
-                  : ListView.builder(
-                      padding: const EdgeInsets.all(8),
-                      itemCount: ctrl.categories.length,
-                      itemBuilder: (_, i) => Card(
-                        margin: const EdgeInsets.only(bottom: 6),
-                        child: ListTile(
-                          leading: const Icon(Icons.label_outline,
-                              color: _kGreenAccent),
-                          title: Text(ctrl.categories[i]),
-                          trailing: IconButton(
-                            icon: const Icon(Icons.delete_outline,
-                                size: 20, color: Colors.red),
-                            onPressed: () =>
-                                ctrl.deleteCategory(i),
-                          ),
-                        ),
-                      ),
+    return Obx(
+      () => Scaffold(
+        appBar: AppBar(title: const Text('Categories')),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () => _showAddDialog(context, ctrl),
+          child: const Icon(Icons.add),
+        ),
+        body: ctrl.categories.isEmpty
+            ? const _EmptyHint(message: 'No categories yet.')
+            : ListView.builder(
+                padding: const EdgeInsets.all(8),
+                itemCount: ctrl.categories.length,
+                itemBuilder: (_, i) => Card(
+                  margin: const EdgeInsets.only(bottom: 6),
+                  child: ListTile(
+                    leading: const Icon(
+                      Icons.label_outline,
+                      color: _kGreenAccent,
                     ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(16),
-              child: SizedBox(
-                width: double.infinity,
-                child: ElevatedButton.icon(
-                  style: ElevatedButton.styleFrom(
-                      padding:
-                          const EdgeInsets.symmetric(vertical: 12)),
-                  icon: const Icon(Icons.add),
-                  label: const Text('Add Category'),
-                  onPressed: () => _addDialog(context, ctrl),
+                    title: Text(ctrl.categories[i]),
+                    trailing: IconButton(
+                      icon: const Icon(
+                        Icons.delete_outline,
+                        size: 20,
+                        color: Colors.red,
+                      ),
+                      onPressed: () => ctrl.deleteCategory(i),
+                    ),
+                  ),
                 ),
               ),
-            ),
-          ],
-        ));
+      ),
+    );
   }
 
-  Future<void> _addDialog(
-      BuildContext context, MessController ctrl) async {
+  Future<void> _showAddDialog(BuildContext context, MessController ctrl) async {
     final c = TextEditingController();
     await showDialog<void>(
       context: context,
@@ -2658,13 +2738,13 @@ class _CategoriesTab extends StatelessWidget {
           controller: c,
           autofocus: true,
           textCapitalization: TextCapitalization.words,
-          decoration:
-              const InputDecoration(labelText: 'Category Name'),
+          decoration: const InputDecoration(labelText: 'Category Name'),
         ),
         actions: [
           TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('Cancel')),
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
           ElevatedButton(
             onPressed: () {
               if (c.text.trim().isNotEmpty) {
@@ -2681,6 +2761,29 @@ class _CategoriesTab extends StatelessWidget {
   }
 }
 
+// ════════════════════════════════════════════════════════════════════════════
+// SETTINGS SCREEN
+// ════════════════════════════════════════════════════════════════════════════
+
+class SettingsScreen extends StatefulWidget {
+  const SettingsScreen({super.key});
+
+  @override
+  State<SettingsScreen> createState() => _SettingsScreenState();
+}
+
+class _SettingsScreenState extends State<SettingsScreen> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Backup & Restore')),
+      body: const _BackupTab(),
+    );
+  }
+}
+
+// ── Backup Tab ────────────────────────────────────────────────────────────────
+
 // ── Backup Tab ────────────────────────────────────────────────────────────────
 
 class _BackupTab extends StatelessWidget {
@@ -2695,70 +2798,15 @@ class _BackupTab extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          const Text('Backup & Restore',
-              style:
-                  TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-          const SizedBox(height: 8),
-          Text(
-            'Export all data as JSON to keep a backup, or import a previously exported JSON file to restore.',
-            style: TextStyle(color: Colors.grey[600], fontSize: 13),
-          ),
           const SizedBox(height: 32),
-          ElevatedButton.icon(
-            style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(vertical: 14)),
-            icon: const Icon(Icons.upload_file),
-            label: const Text('Export Data as JSON',
-                style: TextStyle(fontSize: 15)),
-            onPressed: () async {
-              try {
-                await ctrl.exportJson();
-              } catch (e) {
-                Get.snackbar('Error', 'Export failed: $e',
-                    snackPosition: SnackPosition.BOTTOM);
-              }
-            },
+          const Text(
+            'Danger Zone',
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.bold,
+              color: Colors.red,
+            ),
           ),
-          const SizedBox(height: 14),
-          OutlinedButton.icon(
-            style: OutlinedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(vertical: 14),
-                side: const BorderSide(color: _kGreen)),
-            icon: const Icon(Icons.download, color: _kGreen),
-            label: const Text('Import Data from JSON',
-                style: TextStyle(fontSize: 15, color: _kGreen)),
-            onPressed: () async {
-              try {
-                final ok = await ctrl.importJson();
-                Get.snackbar(
-                  ok ? 'Success' : 'Cancelled',
-                  ok
-                      ? 'Data restored successfully!'
-                      : 'No file selected.',
-                  snackPosition: SnackPosition.BOTTOM,
-                );
-              } catch (e) {
-                Get.snackbar('Error', 'Import failed: $e',
-                    snackPosition: SnackPosition.BOTTOM);
-              }
-            },
-          ),
-          const SizedBox(height: 32),
-          const Divider(),
-          const SizedBox(height: 16),
-          Text(
-            'App Version: 2.0.0\nData stored locally on device.\nNo internet required.',
-            style: TextStyle(color: Colors.grey[400], fontSize: 12),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 32),
-          const Divider(),
-          const SizedBox(height: 16),
-          const Text('Danger Zone',
-              style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.red)),
           const SizedBox(height: 12),
           ElevatedButton.icon(
             style: ElevatedButton.styleFrom(
@@ -2767,8 +2815,7 @@ class _BackupTab extends StatelessWidget {
               padding: const EdgeInsets.symmetric(vertical: 14),
             ),
             icon: const Icon(Icons.delete_forever),
-            label: const Text('Wipe All Data',
-                style: TextStyle(fontSize: 15)),
+            label: const Text('Wipe All Data', style: TextStyle(fontSize: 15)),
             onPressed: () => _showWipeConfirm(context, ctrl),
           ),
         ],
