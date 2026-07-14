@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:hive_flutter/hive_flutter.dart';
 
+import '../../models/note_model.dart';
 import '../../models/mess_models.dart';
 import 'hive_constants.dart';
 
@@ -89,12 +90,28 @@ class HiveService {
     _box.put(HiveConstants.categoriesKey, jsonEncode(value));
   }
 
+  List<Note> get rawNotes {
+    final String data =
+        _box.get(HiveConstants.notesKey, defaultValue: '[]') as String;
+    return (jsonDecode(data) as List)
+        .map((e) => Note.fromJson(e as Map<String, dynamic>))
+        .toList();
+  }
+
+  set rawNotes(List<Note> value) {
+    _box.put(
+      HiveConstants.notesKey,
+      jsonEncode(value.map((e) => e.toJson()).toList()),
+    );
+  }
+
   Map<String, dynamic> exportAll() => {
     'members': rawMembers.map((e) => e.toJson()).toList(),
     'mealEntries': rawMeals.map((e) => e.toJson()).toList(),
     'expenses': rawExpenses.map((e) => e.toJson()).toList(),
     'payments': rawPayments.map((e) => e.toJson()).toList(),
     'categories': rawCategories,
+    'notes': rawNotes.map((e) => e.toJson()).toList(),
   };
 
   void importAll(Map<String, dynamic> data) {
@@ -111,5 +128,8 @@ class HiveService {
         .map((e) => Payment.fromJson(e as Map<String, dynamic>))
         .toList();
     rawCategories = List<String>.from(data['categories'] as List? ?? []);
+    rawNotes = (data['notes'] as List? ?? [])
+        .map((e) => Note.fromJson(e as Map<String, dynamic>))
+        .toList();
   }
 }

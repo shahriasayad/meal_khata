@@ -9,7 +9,9 @@ import '../../categories_screen/screen/categories_screen.dart';
 import '../../meal_history_report/screen/meal_history_report_screen.dart';
 import '../../members_screen/screen/members_screen.dart';
 import '../../payment_screen/screen/payment_screen.dart';
+import '../../settings_screen/screen/settings_screen.dart';
 import '../../summary_screen/screen/summary_screen.dart';
+import '../../../notes/screen/notes_screen.dart';
 import '../controller/dashboard_screen_controller.dart';
 
 class DashboardScreen extends StatelessWidget {
@@ -268,6 +270,22 @@ class DashboardScreen extends StatelessWidget {
             onTap: () {
               Navigator.pop(context);
               Get.to(() => const CategoriesScreen());
+            },
+          ),
+          DrawerItemTile(
+            icon: Icons.note_outlined,
+            title: 'Notes',
+            onTap: () {
+              Navigator.pop(context);
+              Get.to(() => const NotesScreen());
+            },
+          ),
+          DrawerItemTile(
+            icon: Icons.settings_outlined,
+            title: 'Settings',
+            onTap: () {
+              Navigator.pop(context);
+              Get.to(() => const SettingsScreen());
             },
           ),
           DrawerItemTile(

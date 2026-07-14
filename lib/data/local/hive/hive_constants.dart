@@ -5,6 +5,7 @@ class HiveConstants {
   static const String expensesKey = 'expenses';
   static const String categoriesKey = 'categories';
   static const String paymentsKey = 'payments';
+  static const String notesKey = 'notes';
 
   static const List<String> defaultCategories = <String>[
     'Groceries',

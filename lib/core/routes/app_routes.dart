@@ -8,6 +8,7 @@ class AppRoutes {
   static const String payments = '/payments';
   static const String summary = '/summary';
   static const String settings = '/settings';
+  static const String notes = '/notes';
 
   AppRoutes._();
 }

@@ -1,4 +1,5 @@
 import '../local/hive/hive_service.dart';
+import '../models/note_model.dart';
 import '../models/mess_models.dart';
 
 class MessRepository {
@@ -23,6 +24,9 @@ class MessRepository {
 
   List<String> get categories => _hiveService.rawCategories;
   set categories(List<String> value) => _hiveService.rawCategories = value;
+
+  List<Note> get notes => _hiveService.rawNotes;
+  set notes(List<Note> value) => _hiveService.rawNotes = value;
 
   Map<String, dynamic> exportAll() => _hiveService.exportAll();
   void importAll(Map<String, dynamic> data) => _hiveService.importAll(data);

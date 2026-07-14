@@ -4,6 +4,7 @@ import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
 
+import '../../../data/local/hive/hive_constants.dart';
 import '../../../data/models/mess_models.dart';
 import '../../../data/repositories/mess_repository.dart';
 import '../meal_history_report/models/meal_history_report_data.dart';
@@ -28,6 +29,8 @@ class MessViewModel extends GetxController {
     super.onInit();
     _load();
   }
+
+  void reload() => _load();
 
   void _load() {
     members.value = _repository.members;
@@ -252,10 +255,13 @@ class MessViewModel extends GetxController {
     mealEntries.clear();
     expenses.clear();
     payments.clear();
+    categories.value = HiveConstants.defaultCategories.toList();
     _repository.members = [];
     _repository.mealEntries = [];
     _repository.expenses = [];
     _repository.payments = [];
+    _repository.categories = HiveConstants.defaultCategories.toList();
+    _repository.notes = [];
   }
 
   Future<void> generatePdf() async {
