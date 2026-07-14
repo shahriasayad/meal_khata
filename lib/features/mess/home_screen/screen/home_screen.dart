@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../view_models/mess_view_model.dart';
-import 'dashboard_screen.dart';
-import 'expense_screen.dart';
-import 'meal_entry_screen.dart';
+import '../../dashboard_screen/screen/dashboard_screen.dart';
+import '../../expense_screen/screen/expense_screen.dart';
+import '../../meal_entry_screen/screen/meal_entry_screen.dart';
+import '../controller/home_screen_controller.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -17,7 +17,7 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final MessViewModel controller = Get.find<MessViewModel>();
+    final controller = HomeScreenController.instance;
     return Obx(
       () => Scaffold(
         body: IndexedStack(
@@ -26,8 +26,7 @@ class HomeScreen extends StatelessWidget {
         ),
         bottomNavigationBar: NavigationBar(
           selectedIndex: controller.currentTabIndex.value,
-          onDestinationSelected: (int index) =>
-              controller.currentTabIndex.value = index,
+          onDestinationSelected: controller.setTabIndex,
           labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
           destinations: const [
             NavigationDestination(

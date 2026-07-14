@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../../../core/constants/app_colors.dart';
-import '../../../core/widgets/mess_widgets.dart';
-import '../view_models/mess_view_model.dart';
+import '../../../../core/constants/app_colors.dart';
+import '../../../../core/widgets/mess_widgets.dart';
+import '../controller/categories_screen_controller.dart';
 
 class CategoriesScreen extends StatelessWidget {
   const CategoriesScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final MessViewModel controller = Get.find<MessViewModel>();
+    final controller = CategoriesScreenController.instance;
 
     return Obx(
       () => Scaffold(
@@ -49,7 +49,7 @@ class CategoriesScreen extends StatelessWidget {
 
   Future<void> _showAddDialog(
     BuildContext context,
-    MessViewModel controller,
+    CategoriesScreenController controller,
   ) async {
     final TextEditingController textController = TextEditingController();
     await showDialog<void>(

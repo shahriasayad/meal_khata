@@ -95,7 +95,6 @@ class MessViewModel extends GetxController {
   }
 
   void reorderMembers(int oldIndex, int newIndex) {
-    if (newIndex > oldIndex) newIndex--;
     final list = members.toList();
     list.insert(newIndex, list.removeAt(oldIndex));
     members.value = list;
@@ -273,7 +272,7 @@ class MessViewModel extends GetxController {
             style: pw.TextStyle(fontSize: 14, fontWeight: pw.FontWeight.bold),
           ),
           pw.SizedBox(height: 4),
-          pw.Table.fromTextArray(
+          pw.TableHelper.fromTextArray(
             headers: ['Metric', 'Value'],
             data: [
               ['Total Meals', totalMealsValue.toStringAsFixed(2)],
@@ -290,7 +289,7 @@ class MessViewModel extends GetxController {
             style: pw.TextStyle(fontSize: 14, fontWeight: pw.FontWeight.bold),
           ),
           pw.SizedBox(height: 4),
-          pw.Table.fromTextArray(
+          pw.TableHelper.fromTextArray(
             headers: ['Member', 'Meals', 'Gross Cost', 'Paid', 'Balance'],
             data: memberList.map((member) {
               final meals = monthMealsList
@@ -316,7 +315,7 @@ class MessViewModel extends GetxController {
             style: pw.TextStyle(fontSize: 14, fontWeight: pw.FontWeight.bold),
           ),
           pw.SizedBox(height: 4),
-          pw.Table.fromTextArray(
+          pw.TableHelper.fromTextArray(
             headers: ['Date', 'Category', 'Amount', 'Note'],
             data: monthExpensesList
                 .map(

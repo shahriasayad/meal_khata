@@ -3,28 +3,23 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../../../core/constants/app_colors.dart';
-import '../../../core/widgets/mess_widgets.dart';
-import '../view_models/mess_view_model.dart';
+import '../../../../core/constants/app_colors.dart';
+import '../../../../core/widgets/mess_widgets.dart';
+import '../controller/summary_screen_controller.dart';
 
 class SummaryScreen extends StatelessWidget {
   const SummaryScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final MessViewModel controller = Get.find<MessViewModel>();
+    final controller = SummaryScreenController.instance;
 
     return Obx(() {
-      final memberList = controller.members.toList();
+      final memberList = controller.members;
       final totalMeals = controller.totalMeals;
       final totalExpenses = controller.totalExpenses;
       final rate = controller.mealRate;
-
-      final Map<String, double> byCategory = {};
-      for (final expense in controller.monthExpenses) {
-        byCategory[expense.category] =
-            (byCategory[expense.category] ?? 0) + expense.amount;
-      }
+      final byCategory = controller.categoryBreakdown();
 
       return Scaffold(
         appBar: AppBar(
@@ -33,7 +28,7 @@ class SummaryScreen extends StatelessWidget {
             IconButton(
               icon: const Icon(Icons.picture_as_pdf_outlined),
               tooltip: 'Export PDF',
-              onPressed: controller.generatePdf,
+              onPressed: controller.exportPdf,
             ),
           ],
         ),
@@ -72,10 +67,10 @@ class SummaryScreen extends StatelessWidget {
                   const SectionHeader(title: 'Per Member Summary'),
                   const SizedBox(height: 10),
                   ...memberList.map((member) {
-                    final double meals = controller.memberMeals(member.id);
-                    final double gross = controller.memberGrossCost(member.id);
-                    final double paid = controller.memberPaid(member.id);
-                    final double balance = controller.memberBalance(member.id);
+                    final meals = controller.memberMeals(member.id);
+                    final gross = controller.memberGrossCost(member.id);
+                    final paid = controller.memberPaid(member.id);
+                    final balance = controller.memberBalance(member.id);
                     return SummaryMemberCard(
                       member: member,
                       meals: meals,

@@ -3,23 +3,23 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../../../core/constants/app_colors.dart';
-import '../../../core/widgets/mess_widgets.dart';
-import '../../../data/models/mess_models.dart';
-import '../view_models/mess_view_model.dart';
+import '../../../../core/constants/app_colors.dart';
+import '../../../../core/widgets/mess_widgets.dart';
+import '../../../../data/models/mess_models.dart';
+import '../controller/payment_screen_controller.dart';
 
 class PaymentScreen extends StatelessWidget {
   const PaymentScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final MessViewModel controller = Get.find<MessViewModel>();
+    final controller = PaymentScreenController.instance;
 
     return Obx(() {
-      final List<Member> memberList = controller.members.toList();
+      final memberList = controller.members;
       final double totalPaid = controller.totalPaid;
       final double totalExpenses = controller.totalExpenses;
-      final double netDue = totalExpenses - totalPaid;
+      final double netDue = controller.netDue();
 
       return Scaffold(
         appBar: AppBar(title: Text('Payments — ${controller.monthLabel}')),
@@ -68,16 +68,13 @@ class PaymentScreen extends StatelessWidget {
                       padding: const EdgeInsets.fromLTRB(12, 8, 12, 80),
                       itemCount: memberList.length,
                       itemBuilder: (_, int index) {
-                        final Member member = memberList[index];
-                        final double gross = controller.memberGrossCost(
+                        final member = memberList[index];
+                        final gross = controller.grossCost(member.id);
+                        final paid = controller.paid(member.id);
+                        final balance = controller.balance(member.id);
+                        final memberPayments = controller.paymentsFor(
                           member.id,
                         );
-                        final double paid = controller.memberPaid(member.id);
-                        final double balance = controller.memberBalance(
-                          member.id,
-                        );
-                        final List<Payment> memberPayments = controller
-                            .memberMonthPayments(member.id);
 
                         return MemberPaymentTile(
                           member: member,
@@ -98,7 +95,7 @@ class PaymentScreen extends StatelessWidget {
 
   Future<void> _showAddPaymentDialog(
     BuildContext context,
-    MessViewModel controller,
+    PaymentScreenController controller,
     List<Member> members,
   ) async {
     String selectedMemberId = members.first.id;
@@ -130,9 +127,7 @@ class PaymentScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 12),
                 Obx(() {
-                  final double balance = controller.memberBalance(
-                    selectedMemberId,
-                  );
+                  final double balance = controller.balance(selectedMemberId);
                   if (balance <= 0) return const SizedBox.shrink();
                   return Align(
                     alignment: Alignment.centerRight,
@@ -187,7 +182,7 @@ class PaymentScreen extends StatelessWidget {
                   Payment(
                     id: DateTime.now().millisecondsSinceEpoch.toString(),
                     memberId: selectedMemberId,
-                    month: controller.selectedMonth.value,
+                    month: controller.selectedMonth,
                     amount: amount,
                     note: noteController.text.trim(),
                   ),

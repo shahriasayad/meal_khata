@@ -1,20 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../../../core/constants/app_colors.dart';
-import '../../../core/widgets/mess_widgets.dart';
-import '../../../data/models/mess_models.dart';
-import '../view_models/mess_view_model.dart';
+import '../../../../core/constants/app_colors.dart';
+import '../../../../core/widgets/mess_widgets.dart';
+import '../../../../data/models/mess_models.dart';
+import '../controller/members_screen_controller.dart';
 
 class MembersScreen extends StatelessWidget {
   const MembersScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final MessViewModel controller = Get.find<MessViewModel>();
+    final controller = MembersScreenController.instance;
 
     return Obx(() {
-      final List<Member> memberList = controller.members.toList();
+      final memberList = controller.members;
       return Scaffold(
         appBar: AppBar(title: const Text('Members')),
         floatingActionButton: FloatingActionButton(
@@ -63,7 +63,7 @@ class MembersScreen extends StatelessWidget {
                     ),
                   );
                 },
-                onReorder: controller.reorderMembers,
+                onReorderItem: controller.reorderMembers,
               ),
       );
     });
@@ -71,7 +71,7 @@ class MembersScreen extends StatelessWidget {
 
   Future<void> _showAddDialog(
     BuildContext context,
-    MessViewModel controller,
+    MembersScreenController controller,
   ) async {
     final TextEditingController textController = TextEditingController();
     await showDialog<void>(
@@ -106,7 +106,7 @@ class MembersScreen extends StatelessWidget {
 
   Future<void> _showEditDialog(
     BuildContext context,
-    MessViewModel controller,
+    MembersScreenController controller,
     Member member,
   ) async {
     final TextEditingController textController = TextEditingController(
@@ -144,7 +144,7 @@ class MembersScreen extends StatelessWidget {
 
   void _showDeleteConfirm(
     BuildContext context,
-    MessViewModel controller,
+    MembersScreenController controller,
     Member member,
   ) {
     showDialog<void>(

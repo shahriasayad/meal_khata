@@ -3,35 +3,31 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../../../core/constants/app_colors.dart';
-import '../../../core/widgets/mess_widgets.dart';
-import '../../../data/models/mess_models.dart';
-import '../view_models/mess_view_model.dart';
-import 'categories_screen.dart';
-import 'members_screen.dart';
-import 'payment_screen.dart';
-import 'summary_screen.dart';
+import '../../../../core/constants/app_colors.dart';
+import '../../../../core/widgets/mess_widgets.dart';
+import '../../categories_screen/screen/categories_screen.dart';
+import '../../members_screen/screen/members_screen.dart';
+import '../../payment_screen/screen/payment_screen.dart';
+import '../../summary_screen/screen/summary_screen.dart';
+import '../controller/dashboard_screen_controller.dart';
 
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({super.key});
 
-  static final GlobalKey<ScaffoldState> _scaffoldKey =
-      GlobalKey<ScaffoldState>();
-
   @override
   Widget build(BuildContext context) {
-    final MessViewModel controller = Get.find<MessViewModel>();
+    final controller = DashboardScreenController.instance;
     final bool isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Obx(() {
-      final double totalMeals = controller.totalMeals;
-      final double totalExpenses = controller.totalExpenses;
-      final double rate = controller.mealRate;
-      final double totalPaid = controller.totalPaid;
-      final List<Member> memberList = controller.members.toList();
+      final memberList = controller.members;
+      final totalMeals = controller.totalMeals;
+      final totalExpenses = controller.totalExpenses;
+      final rate = controller.mealRate;
+      final totalPaid = controller.totalPaid;
 
       return Scaffold(
-        key: _scaffoldKey,
+        key: controller.scaffoldKey,
         backgroundColor: isDark ? Colors.grey[900] : const Color(0xFFF1F8E9),
         drawer: _buildDrawer(context, controller),
         body: CustomScrollView(
@@ -42,7 +38,7 @@ class DashboardScreen extends StatelessWidget {
               backgroundColor: AppColors.primary,
               leading: IconButton(
                 icon: const Icon(Icons.menu, color: Colors.white),
-                onPressed: () => _scaffoldKey.currentState?.openDrawer(),
+                onPressed: controller.openDrawer,
               ),
               flexibleSpace: FlexibleSpaceBar(
                 background: Container(
@@ -149,15 +145,11 @@ class DashboardScreen extends StatelessWidget {
                       subtitle: '${memberList.length} members',
                     ),
                     const SizedBox(height: 10),
-                    ...memberList.map((dynamic member) {
-                      final double meals = controller.memberMeals(member.id);
-                      final double gross = controller.memberGrossCost(
-                        member.id,
-                      );
-                      final double paid = controller.memberPaid(member.id);
-                      final double balance = controller.memberBalance(
-                        member.id,
-                      );
+                    ...memberList.map((member) {
+                      final meals = controller.memberMeals(member.id);
+                      final gross = controller.memberGrossCost(member.id);
+                      final paid = controller.memberPaid(member.id);
+                      final balance = controller.memberBalance(member.id);
                       return MemberCostCard(
                         member: member,
                         meals: meals,
@@ -205,7 +197,10 @@ class DashboardScreen extends StatelessWidget {
     });
   }
 
-  Widget _buildDrawer(BuildContext context, MessViewModel controller) {
+  Widget _buildDrawer(
+    BuildContext context,
+    DashboardScreenController controller,
+  ) {
     return Drawer(
       child: ListView(
         padding: EdgeInsets.zero,
@@ -289,7 +284,10 @@ class DashboardScreen extends StatelessWidget {
     );
   }
 
-  void _showWipeConfirm(BuildContext context, MessViewModel controller) {
+  void _showWipeConfirm(
+    BuildContext context,
+    DashboardScreenController controller,
+  ) {
     showDialog<void>(
       context: context,
       builder: (_) => AlertDialog(

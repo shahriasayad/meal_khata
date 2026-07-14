@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 
 import 'core/theme/app_theme.dart';
 import 'features/mess/view_models/mess_view_model.dart';
-import 'features/mess/views/home_screen.dart';
+import 'features/mess/home_screen/screen/home_screen.dart';
 
 class MessApp extends StatelessWidget {
   const MessApp({super.key});

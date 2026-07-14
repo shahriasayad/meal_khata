@@ -1,122 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:intl/intl.dart';
 
-import '../../../core/constants/app_colors.dart';
-import '../../../core/widgets/mess_widgets.dart';
-import '../../../data/models/mess_models.dart';
-import '../view_models/mess_view_model.dart';
+import '../../../../core/constants/app_colors.dart';
+import '../../../../core/widgets/mess_widgets.dart';
+import '../controller/meal_entry_screen_controller.dart';
 
-class MealEntryScreen extends StatefulWidget {
+class MealEntryScreen extends StatelessWidget {
   const MealEntryScreen({super.key});
 
   @override
-  State<MealEntryScreen> createState() => _MealEntryScreenState();
-}
-
-class _MealEntryScreenState extends State<MealEntryScreen> {
-  final MessViewModel _controller = Get.find<MessViewModel>();
-  DateTime _date = DateTime.now();
-  final Map<String, TextEditingController> _textControllers = {};
-
-  String get _dateStr => DateFormat('yyyy-MM-dd').format(_date);
-
-  TextEditingController _getOrCreateController(String memberId) {
-    if (!_textControllers.containsKey(memberId)) {
-      final double value = _controller.getMeal(memberId, _dateStr);
-      _textControllers[memberId] = TextEditingController(
-        text: value > 0
-            ? (value == value.truncateToDouble()
-                  ? value.toInt().toString()
-                  : value.toString())
-            : '',
-      );
-    }
-    return _textControllers[memberId]!;
-  }
-
-  String _fmt(double value) => value == value.truncateToDouble()
-      ? value.toInt().toString()
-      : value.toString();
-
-  double _val(String memberId) =>
-      double.tryParse(_textControllers[memberId]?.text.trim() ?? '') ?? 0.0;
-
-  void _increment(String memberId, double step) {
-    final double current = _val(memberId);
-    final double next = current + step;
-    _textControllers[memberId]!.text = _fmt(next);
-    setState(() {});
-  }
-
-  void _decrement(String memberId, double step) {
-    final double current = _val(memberId);
-    final double next = current - step;
-    if (next < 0) return;
-    _textControllers[memberId]!.text = _fmt(next);
-    setState(() {});
-  }
-
-  Future<void> _pickDate() async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: _date,
-      firstDate: DateTime(2020),
-      lastDate: DateTime(2030),
-    );
-    if (picked != null) {
-      _date = picked;
-      for (final member in _controller.members) {
-        if (_textControllers.containsKey(member.id)) {
-          final double value = _controller.getMeal(member.id, _dateStr);
-          _textControllers[member.id]!.text = value > 0 ? _fmt(value) : '';
-        }
-      }
-      setState(() {});
-    }
-  }
-
-  void _copyPrevDay() {
-    final DateTime previousDay = _date.subtract(const Duration(days: 1));
-    final String previousDayStr = DateFormat('yyyy-MM-dd').format(previousDay);
-    final List<MealEntry> found = _controller.mealEntries
-        .where((entry) => entry.date == previousDayStr)
-        .toList();
-    if (found.isEmpty) {
-      _snack('No data for previous day.');
-      return;
-    }
-    for (final MealEntry entry in found) {
-      if (_textControllers.containsKey(entry.memberId)) {
-        _textControllers[entry.memberId]!.text = _fmt(entry.meals);
-      }
-    }
-    setState(() {});
-  }
-
-  void _save() {
-    final map = <String, double>{};
-    for (final member in _controller.members) {
-      map[member.id] = _val(member.id);
-    }
-    _controller.saveDayMeals(_dateStr, map);
-    _snack('Meals saved for ${DateFormat('dd MMM yyyy').format(_date)}');
-  }
-
-  void _snack(String message) => ScaffoldMessenger.of(
-    context,
-  ).showSnackBar(SnackBar(content: Text(message)));
-
-  @override
-  void dispose() {
-    for (final controller in _textControllers.values) {
-      controller.dispose();
-    }
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
+    final controller = MealEntryScreenController.instance;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Meal Entry'),
@@ -124,17 +19,17 @@ class _MealEntryScreenState extends State<MealEntryScreen> {
           IconButton(
             icon: const Icon(Icons.copy_all),
             tooltip: 'Copy Previous Day',
-            onPressed: _copyPrevDay,
+            onPressed: controller.copyPreviousDay,
           ),
           IconButton(
             icon: const Icon(Icons.save_outlined),
             tooltip: 'Save',
-            onPressed: _save,
+            onPressed: controller.saveMeals,
           ),
         ],
       ),
       body: Obx(() {
-        final memberList = _controller.members.toList();
+        final memberList = controller.members;
         return memberList.isEmpty
             ? const AppEmptyHint(
                 message: 'No members yet.\nAdd members in Settings.',
@@ -142,9 +37,9 @@ class _MealEntryScreenState extends State<MealEntryScreen> {
             : Column(
                 children: [
                   Material(
-                    color: AppColors.primary.withOpacity(0.08),
+                    color: AppColors.primary.withValues(alpha: 0.08),
                     child: InkWell(
-                      onTap: _pickDate,
+                      onTap: () => controller.pickDate(context),
                       child: Padding(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 16,
@@ -159,7 +54,7 @@ class _MealEntryScreenState extends State<MealEntryScreen> {
                             ),
                             const SizedBox(width: 10),
                             Text(
-                              DateFormat('EEEE, dd MMMM yyyy').format(_date),
+                              controller.formattedDateLabel(),
                               style: const TextStyle(
                                 fontSize: 15,
                                 fontWeight: FontWeight.w600,
@@ -220,13 +115,14 @@ class _MealEntryScreenState extends State<MealEntryScreen> {
                                     Icons.remove_circle_outline,
                                     color: Colors.red,
                                   ),
-                                  onPressed: () => _decrement(member.id, 1),
+                                  onPressed: () =>
+                                      controller.decrement(member.id, 1),
                                   visualDensity: VisualDensity.compact,
                                 ),
                                 SizedBox(
                                   width: 64,
                                   child: TextField(
-                                    controller: _getOrCreateController(
+                                    controller: controller.controllerFor(
                                       member.id,
                                     ),
                                     keyboardType:
@@ -245,7 +141,7 @@ class _MealEntryScreenState extends State<MealEntryScreen> {
                                         horizontal: 4,
                                       ),
                                     ),
-                                    onChanged: (_) => setState(() {}),
+                                    onChanged: (_) {},
                                   ),
                                 ),
                                 IconButton(
@@ -253,7 +149,8 @@ class _MealEntryScreenState extends State<MealEntryScreen> {
                                     Icons.add_circle_outline,
                                     color: AppColors.primary,
                                   ),
-                                  onPressed: () => _increment(member.id, 1),
+                                  onPressed: () =>
+                                      controller.increment(member.id, 1),
                                   visualDensity: VisualDensity.compact,
                                 ),
                               ],
@@ -277,7 +174,7 @@ class _MealEntryScreenState extends State<MealEntryScreen> {
                             'Save Meals',
                             style: TextStyle(fontSize: 16),
                           ),
-                          onPressed: _save,
+                          onPressed: controller.saveMeals,
                         ),
                       ),
                     ),
