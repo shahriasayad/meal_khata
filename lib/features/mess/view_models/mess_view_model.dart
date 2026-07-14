@@ -6,6 +6,7 @@ import 'package:printing/printing.dart';
 
 import '../../../data/models/mess_models.dart';
 import '../../../data/repositories/mess_repository.dart';
+import '../meal_history_report/models/meal_history_report_data.dart';
 
 class MessViewModel extends GetxController {
   MessViewModel({MessRepository? repository})
@@ -37,19 +38,39 @@ class MessViewModel extends GetxController {
     selectedMonth.value = DateFormat('yyyy-MM').format(DateTime.now());
   }
 
-  List<MealEntry> get monthMeals =>
-      mealEntries.where((e) => e.date.startsWith(selectedMonth.value)).toList();
+  List<MealEntry> get monthMeals => mealsForMonth(selectedMonth.value);
 
-  List<Expense> get monthExpenses =>
-      expenses.where((e) => e.date.startsWith(selectedMonth.value)).toList();
+  List<Expense> get monthExpenses => expensesForMonth(selectedMonth.value);
 
-  List<Payment> get monthPayments =>
-      payments.where((p) => p.month == selectedMonth.value).toList();
+  List<Payment> get monthPayments => paymentsForMonth(selectedMonth.value);
+
+  List<MealEntry> mealsForMonth(String monthKey) =>
+      mealEntries.where((entry) => entry.date.startsWith(monthKey)).toList();
+
+  List<Expense> expensesForMonth(String monthKey) =>
+      expenses.where((expense) => expense.date.startsWith(monthKey)).toList();
+
+  List<Payment> paymentsForMonth(String monthKey) =>
+      payments.where((payment) => payment.month == monthKey).toList();
 
   double get totalMeals => monthMeals.fold(0.0, (sum, e) => sum + e.meals);
 
   double get totalExpenses =>
       monthExpenses.fold(0.0, (sum, e) => sum + e.amount);
+
+  double totalMealsForMonth(String monthKey) =>
+      mealsForMonth(monthKey).fold(0.0, (sum, entry) => sum + entry.meals);
+
+  double totalExpensesForMonth(String monthKey) => expensesForMonth(
+    monthKey,
+  ).fold(0.0, (sum, expense) => sum + expense.amount);
+
+  double mealRateForMonth(String monthKey) {
+    final totalMealsValue = totalMealsForMonth(monthKey);
+    return totalMealsValue > 0
+        ? totalExpensesForMonth(monthKey) / totalMealsValue
+        : 0.0;
+  }
 
   double get mealRate => totalMeals > 0 ? totalExpenses / totalMeals : 0.0;
 
@@ -332,5 +353,90 @@ class MessViewModel extends GetxController {
       ),
     );
     await Printing.layoutPdf(onLayout: (_) async => pdf.save());
+  }
+
+  Future<void> exportMealHistoryReportPdf(
+    MealHistoryReportData reportData, {
+    required bool share,
+  }) async {
+    final pdf = pw.Document();
+
+    pdf.addPage(
+      pw.MultiPage(
+        pageFormat: PdfPageFormat.a4.landscape,
+        margin: const pw.EdgeInsets.all(24),
+        header: (_) => pw.Column(
+          crossAxisAlignment: pw.CrossAxisAlignment.start,
+          children: [
+            pw.Text(
+              'Meal History Report',
+              style: pw.TextStyle(fontSize: 20, fontWeight: pw.FontWeight.bold),
+            ),
+            pw.Text(
+              'Month: ${reportData.monthLabel}',
+              style: const pw.TextStyle(fontSize: 12, color: PdfColors.grey700),
+            ),
+            pw.SizedBox(height: 6),
+            pw.Divider(),
+          ],
+        ),
+        build: (_) => [
+          pw.TableHelper.fromTextArray(
+            headers: reportData.headers,
+            data: reportData.tableData,
+            headerStyle: pw.TextStyle(
+              color: PdfColors.white,
+              fontWeight: pw.FontWeight.bold,
+              fontSize: 8.5,
+            ),
+            cellStyle: const pw.TextStyle(fontSize: 8),
+            headerDecoration: const pw.BoxDecoration(color: PdfColors.green700),
+            cellAlignment: pw.Alignment.center,
+            cellAlignments: const {0: pw.Alignment.centerLeft},
+            border: pw.TableBorder.all(color: PdfColors.grey300),
+          ),
+          pw.SizedBox(height: 12),
+          pw.Text(
+            'Monthly Summary',
+            style: pw.TextStyle(fontSize: 14, fontWeight: pw.FontWeight.bold),
+          ),
+          pw.SizedBox(height: 4),
+          pw.TableHelper.fromTextArray(
+            headers: const ['Metric', 'Value'],
+            data: [
+              ['Total meals', reportData.summary.totalMeals.toStringAsFixed(2)],
+              [
+                'Total meal cost',
+                '৳${reportData.summary.totalMealCost.toStringAsFixed(2)}',
+              ],
+              [
+                'Average meal rate',
+                '৳${reportData.summary.averageMealRate.toStringAsFixed(4)}',
+              ],
+              [
+                'Total active days',
+                reportData.summary.totalActiveDays.toString(),
+              ],
+            ],
+            headerStyle: pw.TextStyle(
+              color: PdfColors.white,
+              fontWeight: pw.FontWeight.bold,
+            ),
+            headerDecoration: const pw.BoxDecoration(color: PdfColors.green700),
+            border: pw.TableBorder.all(color: PdfColors.grey300),
+          ),
+        ],
+      ),
+    );
+
+    final bytes = await pdf.save();
+    if (share) {
+      await Printing.sharePdf(
+        bytes: bytes,
+        filename: 'meal_history_${reportData.monthKey}.pdf',
+      );
+    } else {
+      await Printing.layoutPdf(onLayout: (_) async => bytes);
+    }
   }
 }

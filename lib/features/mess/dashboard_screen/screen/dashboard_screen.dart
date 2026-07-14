@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/widgets/mess_widgets.dart';
 import '../../categories_screen/screen/categories_screen.dart';
+import '../../meal_history_report/screen/meal_history_report_screen.dart';
 import '../../members_screen/screen/members_screen.dart';
 import '../../payment_screen/screen/payment_screen.dart';
 import '../../summary_screen/screen/summary_screen.dart';
@@ -267,6 +268,14 @@ class DashboardScreen extends StatelessWidget {
             onTap: () {
               Navigator.pop(context);
               Get.to(() => const CategoriesScreen());
+            },
+          ),
+          DrawerItemTile(
+            icon: Icons.table_view_outlined,
+            title: 'Meal History',
+            onTap: () {
+              Navigator.pop(context);
+              Get.to(() => const MealHistoryReportScreen());
             },
           ),
           const Divider(height: 24, indent: 16, endIndent: 16),
