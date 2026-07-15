@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 
 import '../../../../data/models/mess_models.dart';
 import '../../../../features/mess/view_models/mess_view_model.dart';
+import '../../../notes/controller/notes_controller.dart';
 
 class DashboardScreenController extends GetxController {
   DashboardScreenController() : _viewModel = Get.find<MessViewModel>();
@@ -31,5 +32,8 @@ class DashboardScreenController extends GetxController {
   void prevMonth() => _viewModel.prevMonth();
   void nextMonth() => _viewModel.nextMonth();
   void openDrawer() => scaffoldKey.currentState?.openDrawer();
-  void wipeAllData() => _viewModel.wipeAllData();
+  void wipeAllData() {
+    _viewModel.wipeAllData();
+    NotesController.reloadIfRegistered();
+  }
 }

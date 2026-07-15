@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../../../../core/widgets/mess_widgets.dart';
 import '../controller/settings_screen_controller.dart';
 
 class SettingsScreen extends StatelessWidget {

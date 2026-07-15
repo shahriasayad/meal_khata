@@ -1,23 +1,23 @@
+import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:get/get.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../../../../data/local/hive/hive_backup_service.dart';
-import '../../../../data/repositories/notes_repository.dart';
 import '../../../../features/mess/view_models/mess_view_model.dart';
+import '../../../notes/controller/notes_controller.dart';
 import '../../../notes/screen/notes_screen.dart';
 
 class SettingsScreenController extends GetxController {
   SettingsScreenController()
     : _viewModel = Get.find<MessViewModel>(),
-      _backupService = HiveBackupService.instance,
-      _notesRepository = NotesRepository();
+      _backupService = HiveBackupService.instance;
 
   final MessViewModel _viewModel;
   final HiveBackupService _backupService;
-  final NotesRepository _notesRepository;
 
   final isBusy = false.obs;
 
@@ -34,21 +34,24 @@ class SettingsScreenController extends GetxController {
     await _runBusyAction(() async {
       final fileName =
           'meal_khata_backup_${DateTime.now().millisecondsSinceEpoch}.json';
-      final filePath = await FilePicker.platform.saveFile(
+      final bytes = Uint8List.fromList(
+        utf8.encode(_backupService.encodeBackup()),
+      );
+      final filePath = await FilePicker.saveFile(
         dialogTitle: 'Save backup file',
         fileName: fileName,
         allowedExtensions: const ['json'],
         type: FileType.custom,
+        bytes: bytes,
       );
 
       if (filePath == null) {
         return;
       }
 
-      final file = await _backupService.writeBackupToFile(filePath);
       Get.snackbar(
         'Backup Saved',
-        'Backup exported to ${file.path}',
+        'Backup exported to $filePath',
         snackPosition: SnackPosition.BOTTOM,
       );
     });
@@ -57,13 +60,18 @@ class SettingsScreenController extends GetxController {
   Future<void> shareBackup() async {
     await _runBusyAction(() async {
       final file = await _backupService.createTempBackupFile();
-      await Share.shareXFiles([XFile(file.path)], text: 'Meal Khata backup');
+      await SharePlus.instance.share(
+        ShareParams(
+          files: [XFile(file.path)],
+          text: 'Meal Khata backup',
+        ),
+      );
     });
   }
 
   Future<void> restoreBackup() async {
     await _runBusyAction(() async {
-      final result = await FilePicker.platform.pickFiles(
+      final result = await FilePicker.pickFiles(
         type: FileType.custom,
         allowedExtensions: const ['json'],
         allowMultiple: false,
@@ -88,6 +96,7 @@ class SettingsScreenController extends GetxController {
 
       _backupService.restoreBackup(backup);
       _viewModel.reload();
+      NotesController.reloadIfRegistered();
       Get.snackbar(
         'Restore Complete',
         'Backup restored successfully.',
@@ -98,7 +107,7 @@ class SettingsScreenController extends GetxController {
 
   void wipeAllData() {
     _viewModel.wipeAllData();
-    _notesRepository.notes = [];
+    NotesController.reloadIfRegistered();
   }
 
   Future<void> _runBusyAction(Future<void> Function() action) async {

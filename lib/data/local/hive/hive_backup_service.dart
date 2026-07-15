@@ -28,7 +28,7 @@ class HiveBackupService {
     if (decoded is! Map) {
       throw const FormatException('Invalid backup file');
     }
-    return Map<String, dynamic>.from(decoded as Map);
+    return Map<String, dynamic>.from(decoded);
   }
 
   bool isValidBackup(Map<String, dynamic> backup) {

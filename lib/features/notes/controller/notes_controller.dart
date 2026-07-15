@@ -13,6 +13,12 @@ class NotesController extends GetxController {
       ? Get.find<NotesController>()
       : Get.put(NotesController());
 
+  static void reloadIfRegistered() {
+    if (Get.isRegistered<NotesController>()) {
+      Get.find<NotesController>().reload();
+    }
+  }
+
   @override
   void onInit() {
     super.onInit();

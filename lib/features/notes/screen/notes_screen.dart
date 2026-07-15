@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 
 import '../../../core/widgets/mess_widgets.dart';
 import '../../../data/models/note_model.dart';
@@ -31,7 +32,7 @@ class NotesScreen extends StatelessWidget {
         return ListView.separated(
           padding: const EdgeInsets.fromLTRB(16, 16, 16, 100),
           itemCount: notes.length,
-          separatorBuilder: (_, __) => const SizedBox(height: 12),
+          separatorBuilder: (_, _) => const SizedBox(height: 12),
           itemBuilder: (context, index) {
             final note = notes[index];
             return _NoteCard(
@@ -219,7 +220,7 @@ class _NoteCard extends StatelessWidget {
               ),
               const SizedBox(height: 10),
               Text(
-                'Updated ${note.updatedAt}',
+                'Updated ${DateFormat('dd MMM yyyy, hh:mm a').format(note.updatedAt)}',
                 style: TextStyle(
                   fontSize: 11,
                   color: colorScheme.onSurfaceVariant,
