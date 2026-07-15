@@ -19,6 +19,15 @@ class ExpenseScreenController extends GetxController {
   double get totalExpenses => _viewModel.totalExpenses;
   String get monthLabel => _viewModel.monthLabel;
   List<String> get categories => _viewModel.categories.toList();
+  List<Member> get members => _viewModel.members.toList();
+
+  String getMemberName(String id) {
+    try {
+      return _viewModel.members.firstWhere((m) => m.id == id).name;
+    } catch (_) {
+      return 'Unknown';
+    }
+  }
 
   void deleteExpense(String id) => _viewModel.deleteExpense(id);
 
@@ -29,9 +38,10 @@ class ExpenseScreenController extends GetxController {
     final amountController = TextEditingController(
       text: existing?.amount.toString() ?? '',
     );
-    final noteController = TextEditingController(text: existing?.note ?? '');
     String category =
         existing?.category ?? (categories.isNotEmpty ? categories.first : '');
+    String memberId = existing?.memberId ??
+        (members.isNotEmpty ? members.first.id : '');
     DateTime selectedDate = existing != null
         ? DateFormat('yyyy-MM-dd').parse(existing.date)
         : DateTime.now();
@@ -91,12 +101,23 @@ class ExpenseScreenController extends GetxController {
                   ),
                 ),
                 const SizedBox(height: 12),
-                TextField(
-                  controller: noteController,
-                  decoration: const InputDecoration(
-                    labelText: 'Note (optional)',
+                if (members.isNotEmpty)
+                  DropdownButtonFormField<String>(
+                    initialValue: members.any((m) => m.id == memberId)
+                        ? memberId
+                        : null,
+                    items: members
+                        .map(
+                          (m) => DropdownMenuItem<String>(
+                            value: m.id,
+                            child: Text(m.name),
+                          ),
+                        )
+                        .toList(),
+                    onChanged: (value) =>
+                        setState(() => memberId = value ?? ''),
+                    decoration: const InputDecoration(labelText: 'Member'),
                   ),
-                ),
               ],
             ),
           ),
@@ -126,6 +147,22 @@ class ExpenseScreenController extends GetxController {
                   );
                   return;
                 }
+                if (members.isEmpty) {
+                  Get.snackbar(
+                    'Error',
+                    'Please add members in Settings first.',
+                    snackPosition: SnackPosition.BOTTOM,
+                  );
+                  return;
+                }
+                if (memberId.isEmpty) {
+                  Get.snackbar(
+                    'Error',
+                    'Select a member.',
+                    snackPosition: SnackPosition.BOTTOM,
+                  );
+                  return;
+                }
                 final expense = Expense(
                   id:
                       existing?.id ??
@@ -133,7 +170,7 @@ class ExpenseScreenController extends GetxController {
                   date: DateFormat('yyyy-MM-dd').format(selectedDate),
                   amount: amount,
                   category: category,
-                  note: noteController.text.trim(),
+                  memberId: memberId,
                 );
                 if (existing == null) {
                   _viewModel.addExpense(expense);
@@ -150,6 +187,5 @@ class ExpenseScreenController extends GetxController {
     );
 
     amountController.dispose();
-    noteController.dispose();
   }
 }

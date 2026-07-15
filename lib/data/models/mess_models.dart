@@ -41,6 +41,7 @@ class Expense {
   final String date;
   final double amount;
   final String category;
+  final String memberId;
   final String note;
 
   const Expense({
@@ -48,6 +49,7 @@ class Expense {
     required this.date,
     required this.amount,
     required this.category,
+    this.memberId = '',
     this.note = '',
   });
 
@@ -55,12 +57,14 @@ class Expense {
     String? date,
     double? amount,
     String? category,
+    String? memberId,
     String? note,
   }) => Expense(
     id: id,
     date: date ?? this.date,
     amount: amount ?? this.amount,
     category: category ?? this.category,
+    memberId: memberId ?? this.memberId,
     note: note ?? this.note,
   );
 
@@ -69,6 +73,7 @@ class Expense {
     'date': date,
     'amount': amount,
     'category': category,
+    'memberId': memberId,
     'note': note,
   };
 
@@ -77,6 +82,7 @@ class Expense {
     date: json['date'] as String,
     amount: (json['amount'] as num).toDouble(),
     category: json['category'] as String,
+    memberId: (json['memberId'] as String?) ?? '',
     note: (json['note'] as String?) ?? '',
   );
 }

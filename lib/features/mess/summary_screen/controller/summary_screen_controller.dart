@@ -25,6 +25,10 @@ class SummaryScreenController extends GetxController {
       _viewModel.memberGrossCost(memberId);
   double memberPaid(String memberId) => _viewModel.memberPaid(memberId);
   double memberBalance(String memberId) => _viewModel.memberBalance(memberId);
+  
+  double memberShoppingExpenses(String memberId) => monthExpenses
+      .where((e) => e.memberId == memberId)
+      .fold(0.0, (sum, e) => sum + e.amount);
 
   Map<String, double> categoryBreakdown() {
     final map = <String, double>{};

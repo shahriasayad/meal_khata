@@ -80,6 +80,26 @@ class SummaryScreen extends StatelessWidget {
                     );
                   }),
                   const SizedBox(height: 20),
+                  const SectionHeader(title: 'Shopping Expenses per Member'),
+                  const SizedBox(height: 10),
+                  ...memberList.where((m) => controller.memberShoppingExpenses(m.id) > 0).map((member) {
+                    final expense = controller.memberShoppingExpenses(member.id);
+                    return Card(
+                      margin: const EdgeInsets.only(bottom: 8),
+                      child: ListTile(
+                        leading: CircleAvatar(
+                          backgroundColor: Colors.blueGrey.withOpacity(0.2),
+                          child: const Icon(Icons.person_outline, color: Colors.blueGrey),
+                        ),
+                        title: Text(member.name, style: const TextStyle(fontWeight: FontWeight.w600)),
+                        trailing: Text(
+                          '৳${expense.toStringAsFixed(0)}',
+                          style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.blueGrey),
+                        ),
+                      ),
+                    );
+                  }),
+                  const SizedBox(height: 20),
                   if (byCategory.isNotEmpty) ...[
                     const SectionHeader(title: 'Expense by Category'),
                     const SizedBox(height: 10),

@@ -99,43 +99,67 @@ class DashboardScreen extends StatelessWidget {
               padding: const EdgeInsets.fromLTRB(16, 16, 16, 100),
               sliver: SliverList(
                 delegate: SliverChildListDelegate([
-                  GridView.count(
-                    crossAxisCount: 2,
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    mainAxisSpacing: 12,
-                    crossAxisSpacing: 12,
-                    childAspectRatio: 1.55,
-                    children: [
-                      MiniStatCard(
-                        label: 'Total Meals',
-                        value: totalMeals.toStringAsFixed(1),
-                        icon: Icons.restaurant,
-                        color: Colors.orange,
-                        isDark: isDark,
-                      ),
-                      MiniStatCard(
-                        label: 'Meal Rate',
-                        value: '৳${rate.toStringAsFixed(2)}',
-                        icon: Icons.calculate,
-                        color: Colors.purple,
-                        isDark: isDark,
-                      ),
-                      MiniStatCard(
-                        label: 'Total Expenses',
-                        value: '৳${totalExpenses.toStringAsFixed(0)}',
-                        icon: Icons.account_balance_wallet,
-                        color: Colors.red,
-                        isDark: isDark,
-                      ),
-                      MiniStatCard(
-                        label: 'Total Paid',
-                        value: '৳${totalPaid.toStringAsFixed(0)}',
-                        icon: Icons.check_circle,
-                        color: Colors.teal,
-                        isDark: isDark,
-                      ),
-                    ],
+                  SizedBox(
+                    height: 100,
+                    child: ListView(
+                      scrollDirection: Axis.horizontal,
+                      children: [
+                        SizedBox(
+                          width: 160,
+                          child: MiniStatCard(
+                            label: 'Total Meals',
+                            value: totalMeals.toStringAsFixed(1),
+                            icon: Icons.restaurant,
+                            color: Colors.orange,
+                            isDark: isDark,
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        SizedBox(
+                          width: 160,
+                          child: MiniStatCard(
+                            label: 'Meal Rate',
+                            value: '৳${rate.toStringAsFixed(2)}',
+                            icon: Icons.calculate,
+                            color: Colors.purple,
+                            isDark: isDark,
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        SizedBox(
+                          width: 160,
+                          child: MiniStatCard(
+                            label: 'Total Expenses',
+                            value: '৳${totalExpenses.toStringAsFixed(0)}',
+                            icon: Icons.account_balance_wallet,
+                            color: Colors.red,
+                            isDark: isDark,
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        SizedBox(
+                          width: 160,
+                          child: MiniStatCard(
+                            label: 'Total Paid',
+                            value: '৳${totalPaid.toStringAsFixed(0)}',
+                            icon: Icons.check_circle,
+                            color: Colors.teal,
+                            isDark: isDark,
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        SizedBox(
+                          width: 160,
+                          child: MiniStatCard(
+                            label: 'Remaining Balance',
+                            value: '৳${(totalPaid - totalExpenses).toStringAsFixed(0)}',
+                            icon: Icons.account_balance,
+                            color: Colors.blue,
+                            isDark: isDark,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                   const SizedBox(height: 20),
                   if (memberList.isEmpty)
@@ -295,53 +319,6 @@ class DashboardScreen extends StatelessWidget {
               Navigator.pop(context);
               Get.to(() => const MealHistoryReportScreen());
             },
-          ),
-          const Divider(height: 24, indent: 16, endIndent: 16),
-          DrawerItemTile(
-            icon: Icons.delete_forever_outlined,
-            title: 'Wipe All Data',
-            color: Colors.red,
-            onTap: () {
-              Navigator.pop(context);
-              _showWipeConfirm(context, controller);
-            },
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _showWipeConfirm(
-    BuildContext context,
-    DashboardScreenController controller,
-  ) {
-    showDialog<void>(
-      context: context,
-      builder: (_) => AlertDialog(
-        title: const Text('Wipe All Data?'),
-        content: const Text(
-          'This will permanently delete all members, meals, expenses, and payments. This action cannot be undone.',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.red,
-              foregroundColor: Colors.white,
-            ),
-            onPressed: () {
-              Navigator.pop(context);
-              controller.wipeAllData();
-              Get.snackbar(
-                'Success',
-                'All data has been wiped.',
-                snackPosition: SnackPosition.BOTTOM,
-              );
-            },
-            child: const Text('Wipe'),
           ),
         ],
       ),

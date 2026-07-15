@@ -84,7 +84,7 @@ class ExpenseScreen extends StatelessWidget {
                               ),
                             ),
                             subtitle: Text(
-                              '${expense.date}${expense.note.isNotEmpty ? '  •  ${expense.note}' : ''}',
+                              '${expense.date}${expense.memberId.isNotEmpty ? '  •  ${controller.getMemberName(expense.memberId)}' : ''}',
                               style: const TextStyle(fontSize: 12),
                             ),
                             trailing: Row(

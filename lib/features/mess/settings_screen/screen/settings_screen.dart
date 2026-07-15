@@ -56,17 +56,17 @@ class SettingsScreen extends StatelessWidget {
                 ],
               ),
             ),
-            const SizedBox(height: 16),
             _SectionCard(
-              title: 'Notes',
-              subtitle: 'Use it for reminders, shopping lists, or quick ideas.',
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: FilledButton.icon(
-                  onPressed: controller.openNotes,
-                  icon: const Icon(Icons.note_add_outlined),
-                  label: const Text('Open Notes'),
+              title: 'Danger Zone',
+              subtitle: 'Reset everything stored on this device.',
+              child: FilledButton.icon(
+                style: FilledButton.styleFrom(
+                  backgroundColor: Colors.red,
+                  foregroundColor: Colors.white,
                 ),
+                onPressed: () => _showWipeConfirm(context, controller),
+                icon: const Icon(Icons.delete_forever_outlined),
+                label: const Text('Wipe All Data'),
               ),
             ),
             const SizedBox(height: 16),
@@ -83,20 +83,6 @@ class SettingsScreen extends StatelessWidget {
                   SizedBox(height: 10),
                   _AboutLine(label: 'Version', value: '2.0'),
                 ],
-              ),
-            ),
-            const SizedBox(height: 16),
-            _SectionCard(
-              title: 'Danger Zone',
-              subtitle: 'Reset everything stored on this device.',
-              child: FilledButton.icon(
-                style: FilledButton.styleFrom(
-                  backgroundColor: Colors.red,
-                  foregroundColor: Colors.white,
-                ),
-                onPressed: () => _showWipeConfirm(context, controller),
-                icon: const Icon(Icons.delete_forever_outlined),
-                label: const Text('Wipe All Data'),
               ),
             ),
           ],
