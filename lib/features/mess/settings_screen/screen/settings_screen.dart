@@ -56,6 +56,7 @@ class SettingsScreen extends StatelessWidget {
                 ],
               ),
             ),
+            SizedBox(height: 16),
             _SectionCard(
               title: 'Danger Zone',
               subtitle: 'Reset everything stored on this device.',
@@ -70,21 +71,29 @@ class SettingsScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 16),
-            _SectionCard(
-              title: 'About App',
-              subtitle: 'App details are shown here in a subtle, readable way.',
+            const SizedBox(height: 32),
+            Center(
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: const [
-                  _AboutLine(
-                    label: 'Developed by',
-                    value: 'Shahria Sayad Oishorjo',
+                children: [
+                  Text(
+                    'Developed by Shahria Sayad Oishorjo',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
                   ),
-                  SizedBox(height: 10),
-                  _AboutLine(label: 'Version', value: '2.0'),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Version 2.0',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
+                  ),
                 ],
               ),
             ),
+            const SizedBox(height: 16),
           ],
         );
       }),
@@ -173,31 +182,31 @@ class _SectionCard extends StatelessWidget {
   }
 }
 
-class _AboutLine extends StatelessWidget {
-  final String label;
-  final String value;
+// class _AboutLine extends StatelessWidget {
+//   final String label;
+//   final String value;
 
-  const _AboutLine({required this.label, required this.value});
+//   const _AboutLine({required this.label, required this.value});
 
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
+//   @override
+//   Widget build(BuildContext context) {
+//     final colorScheme = Theme.of(context).colorScheme;
 
-    return Row(
-      children: [
-        Text(
-          '$label:',
-          style: TextStyle(fontSize: 12, color: colorScheme.onSurfaceVariant),
-        ),
-        const SizedBox(width: 8),
-        Expanded(
-          child: Text(
-            value,
-            textAlign: TextAlign.right,
-            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
-          ),
-        ),
-      ],
-    );
-  }
-}
+//     return Row(
+//       children: [
+//         Text(
+//           '$label:',
+//           style: TextStyle(fontSize: 12, color: colorScheme.onSurfaceVariant),
+//         ),
+//         const SizedBox(width: 8),
+//         Expanded(
+//           child: Text(
+//             value,
+//             textAlign: TextAlign.right,
+//             style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+//           ),
+//         ),
+//       ],
+//     );
+//   }
+// }

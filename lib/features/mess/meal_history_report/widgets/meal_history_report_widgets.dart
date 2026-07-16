@@ -75,8 +75,8 @@ class MealHistorySpreadsheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final double memberCellWidth = reportData.members.length > 4 ? 92 : 104;
-    final double sheetWidth =
-        122 + (reportData.members.length * memberCellWidth) + 110 + 110 + 112;
+    final double scrollableSheetWidth =
+        (reportData.members.length * memberCellWidth) + 110 + 110 + 112;
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16),
@@ -87,35 +87,73 @@ class MealHistorySpreadsheet extends StatelessWidget {
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(16),
-        child: SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: SizedBox(
-            width: sheetWidth,
-            child: CustomScrollView(
-              shrinkWrap: true,
-              slivers: [
-                SliverToBoxAdapter(
-                  child: _SheetHeaderRow(
-                    members: reportData.members,
-                    memberCellWidth: memberCellWidth,
+        child: CustomScrollView(
+          shrinkWrap: true,
+          slivers: [
+            SliverToBoxAdapter(
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Fixed Date Column
+                  SizedBox(
+                    width: 122,
+                    child: Column(
+                      children: [
+                        Container(
+                          color: AppColors.primary,
+                          child: const _HeaderCell(label: 'Date', width: 122),
+                        ),
+                        ...List.generate(reportData.rows.length, (index) {
+                          final row = reportData.rows[index];
+                          final isAlternate = row.date.hashCode.isEven;
+                          return Container(
+                            color: isAlternate
+                                ? Theme.of(context).colorScheme.surface
+                                : Theme.of(context)
+                                      .colorScheme
+                                      .surfaceContainerHighest
+                                      .withValues(alpha: 0.22),
+                            child: _BodyCell(
+                              label: row.date,
+                              width: 122,
+                              isStrong: true,
+                            ),
+                          );
+                        }),
+                      ],
+                    ),
                   ),
-                ),
-                SliverList(
-                  delegate: SliverChildBuilderDelegate((context, index) {
-                    final row = reportData.rows[index];
-                    return _SheetDataRow(
-                      row: row,
-                      members: reportData.members,
-                      memberCellWidth: memberCellWidth,
-                    );
-                  }, childCount: reportData.rows.length),
-                ),
-                SliverToBoxAdapter(
-                  child: MealHistorySummaryCard(summary: reportData.summary),
-                ),
-              ],
+                  // Scrollable columns
+                  Expanded(
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: SizedBox(
+                        width: scrollableSheetWidth,
+                        child: Column(
+                          children: [
+                            _ScrollableHeaderRow(
+                              members: reportData.members,
+                              memberCellWidth: memberCellWidth,
+                            ),
+                            ...List.generate(reportData.rows.length, (index) {
+                              return _ScrollableDataRow(
+                                row: reportData.rows[index],
+                                members: reportData.members,
+                                memberCellWidth: memberCellWidth,
+                              );
+                            }),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
+            SliverToBoxAdapter(
+              child: MealHistorySummaryCard(summary: reportData.summary),
+            ),
+          ],
         ),
       ),
     );
@@ -166,11 +204,14 @@ class MealHistorySummaryCard extends StatelessWidget {
   }
 }
 
-class _SheetHeaderRow extends StatelessWidget {
+class _ScrollableHeaderRow extends StatelessWidget {
   final List<Member> members;
   final double memberCellWidth;
 
-  const _SheetHeaderRow({required this.members, required this.memberCellWidth});
+  const _ScrollableHeaderRow({
+    required this.members,
+    required this.memberCellWidth,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -178,7 +219,6 @@ class _SheetHeaderRow extends StatelessWidget {
       color: AppColors.primary,
       child: Row(
         children: [
-          _HeaderCell(label: 'Date', width: 122),
           ...members.map(
             (member) => _HeaderCell(label: member.name, width: memberCellWidth),
           ),
@@ -191,12 +231,12 @@ class _SheetHeaderRow extends StatelessWidget {
   }
 }
 
-class _SheetDataRow extends StatelessWidget {
+class _ScrollableDataRow extends StatelessWidget {
   final MealHistoryReportRow row;
   final List<Member> members;
   final double memberCellWidth;
 
-  const _SheetDataRow({
+  const _ScrollableDataRow({
     required this.row,
     required this.members,
     required this.memberCellWidth,
@@ -214,7 +254,6 @@ class _SheetDataRow extends StatelessWidget {
             ).colorScheme.surfaceContainerHighest.withValues(alpha: 0.22),
       child: Row(
         children: [
-          _BodyCell(label: row.date, width: 122, isStrong: true),
           ...members.map(
             (member) => _BodyCell(
               label: row.mealsByMember[member.id]?.toStringAsFixed(2) ?? '0.00',
