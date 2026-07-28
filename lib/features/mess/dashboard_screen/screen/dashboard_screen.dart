@@ -5,15 +5,8 @@ import 'package:get/get.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/widgets/mess_widgets.dart';
-import '../../categories_screen/screen/categories_screen.dart';
-import '../../meal_history_report/screen/meal_history_report_screen.dart';
-import '../../members_screen/screen/members_screen.dart';
 import '../../payment_screen/screen/payment_screen.dart';
-import '../../settings_screen/screen/settings_screen.dart';
 import '../../summary_screen/screen/summary_screen.dart';
-import '../../contribution_history/screen/contribution_history_screen.dart';
-import '../../bazaar_screen/screen/bazaar_screen.dart';
-import '../../../notes/screen/notes_screen.dart';
 import '../controller/dashboard_screen_controller.dart';
 
 class DashboardScreen extends StatelessWidget {
@@ -34,17 +27,12 @@ class DashboardScreen extends StatelessWidget {
       return Scaffold(
         key: controller.scaffoldKey,
         backgroundColor: isDark ? Colors.grey[900] : const Color(0xFFF1F8E9),
-        drawer: _buildDrawer(context, controller),
         body: CustomScrollView(
           slivers: [
             SliverAppBar(
               expandedHeight: 160,
               pinned: true,
               backgroundColor: AppColors.primary,
-              leading: IconButton(
-                icon: const Icon(Icons.menu, color: Colors.white),
-                onPressed: controller.openDrawer,
-              ),
               flexibleSpace: FlexibleSpaceBar(
                 background: Container(
                   decoration: const BoxDecoration(
@@ -224,122 +212,5 @@ class DashboardScreen extends StatelessWidget {
         ),
       );
     });
-  }
-
-  Widget _buildDrawer(
-    BuildContext context,
-    DashboardScreenController controller,
-  ) {
-    return Drawer(
-      child: ListView(
-        padding: EdgeInsets.zero,
-        children: [
-          Container(
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [AppColors.primary, AppColors.accent],
-              ),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(16, 40, 16, 24),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
-                    width: 60,
-                    height: 60,
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.2),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: const Icon(
-                      Icons.restaurant_menu,
-                      color: Colors.white,
-                      size: 32,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  const Text(
-                    'meal khata',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    'Manage your shared expenses',
-                    style: TextStyle(
-                      color: Colors.white.withOpacity(0.8),
-                      fontSize: 12,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          const SizedBox(height: 12),
-          DrawerItemTile(
-            icon: Icons.person_add_outlined,
-            title: 'Members',
-            onTap: () {
-              Navigator.pop(context);
-              Get.to(() => const MembersScreen());
-            },
-          ),
-          DrawerItemTile(
-            icon: Icons.label_outline,
-            title: 'Categories',
-            onTap: () {
-              Navigator.pop(context);
-              Get.to(() => const CategoriesScreen());
-            },
-          ),
-          DrawerItemTile(
-            icon: Icons.shopping_basket_outlined,
-            title: 'Bazaar & Shopping',
-            onTap: () {
-              Navigator.pop(context);
-              Get.to(() => const BazaarScreen());
-            },
-          ),
-          DrawerItemTile(
-            icon: Icons.note_outlined,
-            title: 'Notes',
-            onTap: () {
-              Navigator.pop(context);
-              Get.to(() => const NotesScreen());
-            },
-          ),
-          DrawerItemTile(
-            icon: Icons.history_outlined,
-            title: 'Contribution History',
-            onTap: () {
-              Navigator.pop(context);
-              Get.to(() => const ContributionHistoryScreen());
-            },
-          ),
-          DrawerItemTile(
-            icon: Icons.settings_outlined,
-            title: 'Settings',
-            onTap: () {
-              Navigator.pop(context);
-              Get.to(() => const SettingsScreen());
-            },
-          ),
-          DrawerItemTile(
-            icon: Icons.table_view_outlined,
-            title: 'Meal History',
-            onTap: () {
-              Navigator.pop(context);
-              Get.to(() => const MealHistoryReportScreen());
-            },
-          ),
-        ],
-      ),
-    );
   }
 }

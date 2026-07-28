@@ -4,6 +4,8 @@ import 'package:get/get.dart';
 import '../../dashboard_screen/screen/dashboard_screen.dart';
 import '../../expense_screen/screen/expense_screen.dart';
 import '../../meal_entry_screen/screen/meal_entry_screen.dart';
+import '../../bazaar_screen/screen/bazaar_screen.dart';
+import '../../menu_screen/screen/menu_screen.dart';
 import '../controller/home_screen_controller.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -13,6 +15,8 @@ class HomeScreen extends StatelessWidget {
     DashboardScreen(),
     MealEntryScreen(),
     ExpenseScreen(),
+    BazaarScreen(),
+    MenuScreen(),
   ];
 
   @override
@@ -43,6 +47,16 @@ class HomeScreen extends StatelessWidget {
               icon: Icon(Icons.receipt_long_outlined),
               selectedIcon: Icon(Icons.receipt_long),
               label: 'Expenses',
+            ),
+            NavigationDestination(
+              icon: Icon(Icons.shopping_basket_outlined),
+              selectedIcon: Icon(Icons.shopping_basket),
+              label: 'Bazaar',
+            ),
+            NavigationDestination(
+              icon: Icon(Icons.menu),
+              selectedIcon: Icon(Icons.menu_open),
+              label: 'Menu',
             ),
           ],
         ),
