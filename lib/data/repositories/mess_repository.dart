@@ -28,6 +28,12 @@ class MessRepository {
   List<Note> get notes => _hiveService.rawNotes;
   set notes(List<Note> value) => _hiveService.rawNotes = value;
 
+  List<BazaarScheduleEntry> get bazaarSchedule => _hiveService.rawBazaarSchedule;
+  set bazaarSchedule(List<BazaarScheduleEntry> value) => _hiveService.rawBazaarSchedule = value;
+
+  List<ShoppingItem> get shoppingList => _hiveService.rawShoppingList;
+  set shoppingList(List<ShoppingItem> value) => _hiveService.rawShoppingList = value;
+
   Map<String, dynamic> exportAll() => _hiveService.exportAll();
   void importAll(Map<String, dynamic> data) => _hiveService.importAll(data);
 }

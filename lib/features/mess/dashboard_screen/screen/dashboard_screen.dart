@@ -12,6 +12,7 @@ import '../../payment_screen/screen/payment_screen.dart';
 import '../../settings_screen/screen/settings_screen.dart';
 import '../../summary_screen/screen/summary_screen.dart';
 import '../../contribution_history/screen/contribution_history_screen.dart';
+import '../../bazaar_screen/screen/bazaar_screen.dart';
 import '../../../notes/screen/notes_screen.dart';
 import '../controller/dashboard_screen_controller.dart';
 
@@ -295,6 +296,14 @@ class DashboardScreen extends StatelessWidget {
             onTap: () {
               Navigator.pop(context);
               Get.to(() => const CategoriesScreen());
+            },
+          ),
+          DrawerItemTile(
+            icon: Icons.shopping_basket_outlined,
+            title: 'Bazaar & Shopping',
+            onTap: () {
+              Navigator.pop(context);
+              Get.to(() => const BazaarScreen());
             },
           ),
           DrawerItemTile(

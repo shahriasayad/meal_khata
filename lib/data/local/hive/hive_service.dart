@@ -105,6 +105,36 @@ class HiveService {
     );
   }
 
+  List<BazaarScheduleEntry> get rawBazaarSchedule {
+    final String data =
+        _box.get(HiveConstants.bazaarScheduleKey, defaultValue: '[]') as String;
+    return (jsonDecode(data) as List)
+        .map((e) => BazaarScheduleEntry.fromJson(e as Map<String, dynamic>))
+        .toList();
+  }
+
+  set rawBazaarSchedule(List<BazaarScheduleEntry> value) {
+    _box.put(
+      HiveConstants.bazaarScheduleKey,
+      jsonEncode(value.map((e) => e.toJson()).toList()),
+    );
+  }
+
+  List<ShoppingItem> get rawShoppingList {
+    final String data =
+        _box.get(HiveConstants.shoppingListKey, defaultValue: '[]') as String;
+    return (jsonDecode(data) as List)
+        .map((e) => ShoppingItem.fromJson(e as Map<String, dynamic>))
+        .toList();
+  }
+
+  set rawShoppingList(List<ShoppingItem> value) {
+    _box.put(
+      HiveConstants.shoppingListKey,
+      jsonEncode(value.map((e) => e.toJson()).toList()),
+    );
+  }
+
   Map<String, dynamic> exportAll() => {
     'members': rawMembers.map((e) => e.toJson()).toList(),
     'mealEntries': rawMeals.map((e) => e.toJson()).toList(),
@@ -112,6 +142,8 @@ class HiveService {
     'payments': rawPayments.map((e) => e.toJson()).toList(),
     'categories': rawCategories,
     'notes': rawNotes.map((e) => e.toJson()).toList(),
+    'bazaarSchedule': rawBazaarSchedule.map((e) => e.toJson()).toList(),
+    'shoppingList': rawShoppingList.map((e) => e.toJson()).toList(),
   };
 
   void importAll(Map<String, dynamic> data) {
@@ -130,6 +162,12 @@ class HiveService {
     rawCategories = List<String>.from(data['categories'] as List? ?? []);
     rawNotes = (data['notes'] as List? ?? [])
         .map((e) => Note.fromJson(e as Map<String, dynamic>))
+        .toList();
+    rawBazaarSchedule = (data['bazaarSchedule'] as List? ?? [])
+        .map((e) => BazaarScheduleEntry.fromJson(e as Map<String, dynamic>))
+        .toList();
+    rawShoppingList = (data['shoppingList'] as List? ?? [])
+        .map((e) => ShoppingItem.fromJson(e as Map<String, dynamic>))
         .toList();
   }
 }

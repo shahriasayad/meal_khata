@@ -20,6 +20,8 @@ class MessViewModel extends GetxController {
   final expenses = <Expense>[].obs;
   final payments = <Payment>[].obs;
   final categories = <String>[].obs;
+  final bazaarSchedule = <BazaarScheduleEntry>[].obs;
+  final shoppingList = <ShoppingItem>[].obs;
 
   final selectedMonth = ''.obs;
   final currentTabIndex = 0.obs;
@@ -38,6 +40,8 @@ class MessViewModel extends GetxController {
     expenses.value = _repository.expenses;
     payments.value = _repository.payments;
     categories.value = _repository.categories;
+    bazaarSchedule.value = _repository.bazaarSchedule;
+    shoppingList.value = _repository.shoppingList;
     selectedMonth.value = DateFormat('yyyy-MM').format(DateTime.now());
   }
 
@@ -198,6 +202,54 @@ class MessViewModel extends GetxController {
     }
   }
 
+  void addShoppingItem(String name, String quantity) {
+    final item = ShoppingItem(
+      id: DateTime.now().millisecondsSinceEpoch.toString(),
+      name: name.trim(),
+      quantity: quantity.trim(),
+    );
+    shoppingList.add(item);
+    _repository.shoppingList = shoppingList.toList();
+  }
+
+  void toggleShoppingItem(String id) {
+    final index = shoppingList.indexWhere((e) => e.id == id);
+    if (index != -1) {
+      final item = shoppingList[index];
+      shoppingList[index] = item.copyWith(isCompleted: !item.isCompleted);
+      shoppingList.refresh();
+      _repository.shoppingList = shoppingList.toList();
+    }
+  }
+
+  void deleteShoppingItem(String id) {
+    shoppingList.removeWhere((e) => e.id == id);
+    _repository.shoppingList = shoppingList.toList();
+  }
+
+  void generateBazaarSchedule(DateTime start, DateTime end, List<String> memberIds) {
+    if (memberIds.isEmpty) return;
+    
+    final newEntries = <BazaarScheduleEntry>[];
+    int memberIndex = 0;
+    
+    for (var date = start; date.isBefore(end.add(const Duration(days: 1))); date = date.add(const Duration(days: 1))) {
+      final dateStr = DateFormat('yyyy-MM-dd').format(date);
+      bazaarSchedule.removeWhere((e) => e.date == dateStr);
+      newEntries.add(BazaarScheduleEntry(date: dateStr, memberId: memberIds[memberIndex]));
+      memberIndex = (memberIndex + 1) % memberIds.length;
+    }
+    
+    bazaarSchedule.addAll(newEntries);
+    _repository.bazaarSchedule = bazaarSchedule.toList();
+  }
+
+  void updateScheduleDate(String dateStr, String memberId) {
+    bazaarSchedule.removeWhere((e) => e.date == dateStr);
+    bazaarSchedule.add(BazaarScheduleEntry(date: dateStr, memberId: memberId));
+    _repository.bazaarSchedule = bazaarSchedule.toList();
+  }
+
   void setMonth(String yyyyMM) {
     selectedMonth.value = yyyyMM;
   }
@@ -256,12 +308,16 @@ class MessViewModel extends GetxController {
     expenses.clear();
     payments.clear();
     categories.value = HiveConstants.defaultCategories.toList();
+    bazaarSchedule.clear();
+    shoppingList.clear();
     _repository.members = [];
     _repository.mealEntries = [];
     _repository.expenses = [];
     _repository.payments = [];
     _repository.categories = HiveConstants.defaultCategories.toList();
     _repository.notes = [];
+    _repository.bazaarSchedule = [];
+    _repository.shoppingList = [];
   }
 
   Future<void> generatePdf() async {
@@ -440,6 +496,88 @@ class MessViewModel extends GetxController {
       await Printing.sharePdf(
         bytes: bytes,
         filename: 'meal_history_${reportData.monthKey}.pdf',
+      );
+    } else {
+      await Printing.layoutPdf(onLayout: (_) async => bytes);
+    }
+  }
+
+  Future<void> exportBazaarPdf({required bool share}) async {
+    final pdf = pw.Document();
+    
+    pdf.addPage(
+      pw.MultiPage(
+        pageFormat: PdfPageFormat.a4,
+        margin: const pw.EdgeInsets.all(32),
+        header: (_) => pw.Column(
+          crossAxisAlignment: pw.CrossAxisAlignment.start,
+          children: [
+            pw.Text(
+              'Bazaar Schedule & Shopping List',
+              style: pw.TextStyle(fontSize: 20, fontWeight: pw.FontWeight.bold),
+            ),
+            pw.Text(
+              'Generated on: ${DateFormat('dd MMM yyyy').format(DateTime.now())}',
+              style: const pw.TextStyle(fontSize: 10, color: PdfColors.grey700),
+            ),
+            pw.SizedBox(height: 6),
+            pw.Divider(),
+          ],
+        ),
+        build: (_) {
+          final sortedSchedule = bazaarSchedule.toList()..sort((a, b) => a.date.compareTo(b.date));
+          final futureSchedule = sortedSchedule.where((e) => DateTime.parse(e.date).isAfter(DateTime.now().subtract(const Duration(days: 1)))).toList();
+          
+          return [
+            pw.Text(
+              'Shopping List',
+              style: pw.TextStyle(fontSize: 16, fontWeight: pw.FontWeight.bold),
+            ),
+            pw.SizedBox(height: 8),
+            if (shoppingList.isEmpty)
+              pw.Text('No items in the shopping list.', style: const pw.TextStyle(color: PdfColors.grey700))
+            else
+              pw.TableHelper.fromTextArray(
+                headers: ['Item Name', 'Quantity', 'Status'],
+                data: shoppingList.map((e) => [
+                  e.name,
+                  e.quantity,
+                  e.isCompleted ? 'Done' : 'Pending'
+                ]).toList(),
+                headerStyle: pw.TextStyle(fontWeight: pw.FontWeight.bold, color: PdfColors.white),
+                headerDecoration: const pw.BoxDecoration(color: PdfColors.blueGrey800),
+                border: pw.TableBorder.all(color: PdfColors.grey300),
+              ),
+            pw.SizedBox(height: 24),
+            pw.Text(
+              'Upcoming Bazaar Schedule',
+              style: pw.TextStyle(fontSize: 16, fontWeight: pw.FontWeight.bold),
+            ),
+            pw.SizedBox(height: 8),
+            if (futureSchedule.isEmpty)
+              pw.Text('No upcoming schedule generated.', style: const pw.TextStyle(color: PdfColors.grey700))
+            else
+              pw.TableHelper.fromTextArray(
+                headers: ['Date', 'Assigned Member'],
+                data: futureSchedule.map((e) {
+                  final memberName = members.firstWhereOrNull((m) => m.id == e.memberId)?.name ?? 'Unknown';
+                  final dateFormatted = DateFormat('EEE, dd MMM yyyy').format(DateTime.parse(e.date));
+                  return [dateFormatted, memberName];
+                }).toList(),
+                headerStyle: pw.TextStyle(fontWeight: pw.FontWeight.bold, color: PdfColors.white),
+                headerDecoration: const pw.BoxDecoration(color: PdfColors.blueGrey800),
+                border: pw.TableBorder.all(color: PdfColors.grey300),
+              ),
+          ];
+        },
+      ),
+    );
+
+    final bytes = await pdf.save();
+    if (share) {
+      await Printing.sharePdf(
+        bytes: bytes,
+        filename: 'bazaar_schedule.pdf',
       );
     } else {
       await Printing.layoutPdf(onLayout: (_) async => bytes);

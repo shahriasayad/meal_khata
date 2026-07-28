@@ -120,3 +120,62 @@ class Payment {
     note: (json['note'] as String?) ?? '',
   );
 }
+
+class ShoppingItem {
+  final String id;
+  final String name;
+  final String quantity;
+  final bool isCompleted;
+
+  const ShoppingItem({
+    required this.id,
+    required this.name,
+    this.quantity = '',
+    this.isCompleted = false,
+  });
+
+  ShoppingItem copyWith({
+    String? name,
+    String? quantity,
+    bool? isCompleted,
+  }) => ShoppingItem(
+    id: id,
+    name: name ?? this.name,
+    quantity: quantity ?? this.quantity,
+    isCompleted: isCompleted ?? this.isCompleted,
+  );
+
+  Map<String, dynamic> toJson() => {
+    'id': id,
+    'name': name,
+    'quantity': quantity,
+    'isCompleted': isCompleted,
+  };
+
+  factory ShoppingItem.fromJson(Map<String, dynamic> json) => ShoppingItem(
+    id: json['id'] as String,
+    name: json['name'] as String,
+    quantity: (json['quantity'] as String?) ?? '',
+    isCompleted: (json['isCompleted'] as bool?) ?? false,
+  );
+}
+
+class BazaarScheduleEntry {
+  final String date; // Format: yyyy-MM-dd
+  final String memberId;
+
+  const BazaarScheduleEntry({
+    required this.date,
+    required this.memberId,
+  });
+
+  Map<String, dynamic> toJson() => {
+    'date': date,
+    'memberId': memberId,
+  };
+
+  factory BazaarScheduleEntry.fromJson(Map<String, dynamic> json) => BazaarScheduleEntry(
+    date: json['date'] as String,
+    memberId: json['memberId'] as String,
+  );
+}
