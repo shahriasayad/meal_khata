@@ -11,6 +11,7 @@ import '../../members_screen/screen/members_screen.dart';
 import '../../payment_screen/screen/payment_screen.dart';
 import '../../settings_screen/screen/settings_screen.dart';
 import '../../summary_screen/screen/summary_screen.dart';
+import '../../contribution_history/screen/contribution_history_screen.dart';
 import '../../../notes/screen/notes_screen.dart';
 import '../controller/dashboard_screen_controller.dart';
 
@@ -302,6 +303,14 @@ class DashboardScreen extends StatelessWidget {
             onTap: () {
               Navigator.pop(context);
               Get.to(() => const NotesScreen());
+            },
+          ),
+          DrawerItemTile(
+            icon: Icons.history_outlined,
+            title: 'Contribution History',
+            onTap: () {
+              Navigator.pop(context);
+              Get.to(() => const ContributionHistoryScreen());
             },
           ),
           DrawerItemTile(

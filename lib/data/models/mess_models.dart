@@ -94,6 +94,8 @@ class Payment {
   final double amount;
   final String note;
 
+  DateTime get date => DateTime.fromMillisecondsSinceEpoch(int.parse(id));
+
   const Payment({
     required this.id,
     required this.memberId,
